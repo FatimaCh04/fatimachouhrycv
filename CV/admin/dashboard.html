@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard | Portfolio Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined&amp;display=swap" rel="stylesheet"/>
+  <link href="admin.css" rel="stylesheet"/>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: { primary: '#14b8a6', 'background-dark': '#0f172a', sidebar: '#0e1628' },
+          fontFamily: { display: ['Inter', 'sans-serif'] }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-background-dark font-display text-slate-100 antialiased min-h-screen">
+  <div class="flex">
+    <aside class="admin-sidebar fixed inset-y-0 left-0 w-64 bg-sidebar border-r border-slate-700 flex flex-col z-50">
+      <div class="p-5 border-b border-slate-700">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary text-2xl">admin_panel_settings</span>
+          <span class="font-bold text-white">Portfolio Admin</span>
+        </div>
+      </div>
+      <nav class="flex-1 p-3 space-y-1 overflow-y-auto">
+        <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-white bg-primary/20 border-l-4 border-primary"> <span class="material-symbols-outlined">dashboard</span> Dashboard </a>
+        <a href="manage-profile.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition"> <span class="material-symbols-outlined">person</span> Profile </a>
+        <a href="manage-posts.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition"> <span class="material-symbols-outlined">article</span> Blog Posts </a>
+        <a href="manage-projects.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition"> <span class="material-symbols-outlined">folder_open</span> Projects </a>
+        <a href="manage-services.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition"> <span class="material-symbols-outlined">work</span> Services </a>
+      </nav>
+      <div class="p-3 border-t border-slate-700">
+        <button type="button" id="logout-btn" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-red-900/30 hover:text-red-400 transition">
+          <span class="material-symbols-outlined">logout</span> Logout
+        </button>
+      </div>
+    </aside>
+    <main class="flex-1 ml-64 p-8">
+      <div class="max-w-4xl">
+        <h1 class="text-2xl font-bold text-white mb-2">Overview</h1>
+        <p class="text-slate-400 mb-8">Site stats and quick links.</p>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+          <div class="admin-card rounded-xl border border-slate-700 bg-slate-800/40 p-6">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-slate-400 text-sm font-medium">Blog Posts</p>
+                <p id="stat-posts" class="text-3xl font-bold text-white mt-1">0</p>
+              </div>
+              <span class="material-symbols-outlined text-4xl text-primary/60">article</span>
+            </div>
+            <a href="manage-posts.html" class="mt-4 inline-flex items-center gap-1 text-primary text-sm font-medium hover:underline">Manage <span class="material-symbols-outlined text-lg">arrow_forward</span></a>
+          </div>
+          <div class="admin-card rounded-xl border border-slate-700 bg-slate-800/40 p-6">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-slate-400 text-sm font-medium">Projects</p>
+                <p id="stat-projects" class="text-3xl font-bold text-white mt-1">0</p>
+              </div>
+              <span class="material-symbols-outlined text-4xl text-primary/60">folder_open</span>
+            </div>
+            <a href="manage-projects.html" class="mt-4 inline-flex items-center gap-1 text-primary text-sm font-medium hover:underline">Manage <span class="material-symbols-outlined text-lg">arrow_forward</span></a>
+          </div>
+          <div class="admin-card rounded-xl border border-slate-700 bg-slate-800/40 p-6">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-slate-400 text-sm font-medium">Services</p>
+                <p id="stat-services" class="text-3xl font-bold text-white mt-1">0</p>
+              </div>
+              <span class="material-symbols-outlined text-4xl text-primary/60">work</span>
+            </div>
+            <a href="manage-services.html" class="mt-4 inline-flex items-center gap-1 text-primary text-sm font-medium hover:underline">Manage <span class="material-symbols-outlined text-lg">arrow_forward</span></a>
+          </div>
+        </div>
+        <div class="rounded-xl border border-slate-700 bg-slate-800/40 p-6">
+          <h2 class="text-lg font-semibold text-white mb-2">Quick actions</h2>
+          <div class="flex flex-wrap gap-3">
+            <a href="manage-profile.html" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary/20 text-primary font-medium hover:bg-primary/30 transition">Edit profile</a>
+            <a href="manage-posts.html" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary/20 text-primary font-medium hover:bg-primary/30 transition">Add post</a>
+            <a href="manage-projects.html" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary/20 text-primary font-medium hover:bg-primary/30 transition">Add project</a>
+            <a href="manage-services.html" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary/20 text-primary font-medium hover:bg-primary/30 transition">Add service</a>
+            <a href="../index.html" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-700 text-slate-300 font-medium hover:bg-slate-600 transition">View site</a>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="admin.js"></script>
+  <script>
+    (function () {
+      if (!PortfolioAdmin.requireAuth()) return;
+      document.getElementById('stat-posts').textContent = PortfolioAdmin.getBlogPosts().length;
+      document.getElementById('stat-projects').textContent = PortfolioAdmin.getProjects().length;
+      document.getElementById('stat-services').textContent = PortfolioAdmin.getServices().length;
+      document.getElementById('logout-btn').addEventListener('click', function () { PortfolioAdmin.logout(); });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,207 @@
+/* Profile photo: circle mein bilkul pehle jaisa fit (center crop) */
+.profile-photo {
+  object-fit: cover;
+  object-position: center center;
+}
+.profile-photo-wrapper img.profile-photo {
+  display: block;
+}
+
+/* Theme: Developer dark – indigo + cyan accent */
+:root {
+  --bg-main: #0F172A;
+  --bg-sidebar: #0F172A;
+  --bg-card: #1E293B;
+  --bg-card-hover: #334155;
+  --text-primary: #E2E8F0;
+  --text-secondary: #94A3B8;
+  --primary: #4F46E5;
+  --accent: #22D3EE;
+  --border: #334155;
+  --shadow-glow: rgba(19, 91, 236, 0.25);
+}
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+}
+
+body .text-slate-100,
+body .text-white {
+  color: var(--text-primary) !important;
+}
+
+body .text-slate-400,
+body .text-slate-500 {
+  color: var(--text-secondary) !important;
+}
+
+aside {
+  background-color: var(--bg-sidebar) !important;
+  border-right-color: var(--border) !important;
+}
+
+/* Cards / sections */
+.rounded-xl.border.border-slate-700,
+section.rounded-xl {
+  background-color: var(--bg-card) !important;
+  border-color: var(--border) !important;
+}
+
+.rounded-xl.border.border-slate-700:hover,
+section.rounded-xl:hover {
+  box-shadow: 0 4px 20px var(--shadow-glow);
+}
+
+/* Nav items in sidebar */
+aside nav a:hover {
+  background: var(--bg-card) !important;
+  color: var(--accent) !important;
+}
+
+aside nav a.bg-slate-700\/80 {
+  background: rgba(79, 70, 229, 0.25) !important;
+  color: var(--accent) !important;
+  border-color: transparent;
+}
+
+/* Social icons area */
+aside .grid.grid-cols-3 a {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border);
+}
+
+aside .grid.grid-cols-3 a:hover {
+  background: rgba(34, 211, 238, 0.15) !important;
+  color: var(--accent) !important;
+  border-color: var(--accent);
+}
+
+/* Primary CTA / buttons – indigo with blue glow on hover */
+button.bg-primary,
+a.bg-primary,
+.bg-primary.text-slate-900 {
+  color: #fff !important;
+}
+.bg-primary:hover {
+  box-shadow: 0 4px 20px var(--shadow-glow);
+}
+
+/* Links & accent (teal/cyan) */
+a.text-primary,
+.hover\:text-teal-400:hover,
+.hover\:text-primary:hover {
+  color: var(--accent) !important;
+}
+
+/* Scrollbar – theme ke mutabiq dark */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #334155 #1E293B;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--bg-card);
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+*::-webkit-scrollbar-corner {
+  background: var(--bg-card);
+}
+
+/* ========== Mobile responsive ========== */
+@media (max-width: 767px) {
+  /* Sidebar: drawer – off-screen by default, slide in when menu open */
+  #site-sidebar {
+    width: 280px;
+    max-width: 85vw;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease-out;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.4);
+  }
+  body.mobile-menu-open #site-sidebar {
+    transform: translateX(0);
+  }
+  /* Main: full width, smaller padding */
+  #site-main {
+    margin-left: 0 !important;
+    padding: 1rem !important;
+    min-height: 100vh;
+  }
+  /* Mobile menu button – touch friendly */
+  #mobile-menu-btn {
+    display: flex !important;
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 60;
+    width: 44px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.75rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+  #mobile-menu-btn:active {
+    background: var(--bg-card-hover);
+  }
+  /* Overlay when menu open */
+  #mobile-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 45;
+    backdrop-filter: blur(2px);
+  }
+  body.mobile-menu-open #mobile-overlay {
+    display: block;
+  }
+  /* Slightly smaller section padding on mobile */
+  #site-main section.rounded-xl,
+  #site-main .rounded-xl.border {
+    padding: 1.25rem !important;
+  }
+  #site-main .p-8 {
+    padding: 1.25rem !important;
+  }
+  /* Touch-friendly buttons and links */
+  #site-main a.bg-primary,
+  #site-main button.bg-primary,
+  #site-main .rounded-lg.py-3 {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  /* Headings scale down on small screens */
+  #site-main h2 {
+    font-size: 1.35rem;
+  }
+  #site-main h3 {
+    font-size: 1.1rem;
+  }
+}
+
+@media (min-width: 768px) {
+  #mobile-menu-btn,
+  #mobile-overlay {
+    display: none !important;
+  }
+}
