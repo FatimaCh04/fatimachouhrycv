@@ -196,13 +196,14 @@
       </div>
     </main>
   </div>
-  <script src="assets/js/common.js"></script>
   <script src="assets/js/portfolio-data.js"></script>
+  <script src="assets/js/common.js"></script>
   <script>
     (function() {
       var grid = document.getElementById('portfolio-grid');
       var filtersContainer = document.getElementById('portfolio-filters');
       if (!grid || !filtersContainer) return;
+      function run() {
       var categoryLabels = { 'all': 'All', 'web-development': 'Web Development', 'react-development': 'React Development', 'mobile-app': 'Mobile App Development', 'wordpress': 'WordPress Development', 'desktop': 'Desktop', 'blogger': 'Blogger' };
       var projects = window.PortfolioData && PortfolioData.getProjects ? PortfolioData.getProjects() : [];
       if (projects.length > 0) {
@@ -267,6 +268,12 @@
           filter(btn.getAttribute('data-filter'));
         });
       });
+      }
+      if (window.PortfolioData && window.PortfolioData.ready) {
+        PortfolioData.ready().then(run);
+      } else {
+        run();
+      }
     })();
   </script>
 </body>

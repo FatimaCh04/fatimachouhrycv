@@ -55,8 +55,12 @@
   }
 
   document.addEventListener('DOMContentLoaded', function () {
-    applyProfileFromAdmin();
     initTypingEffect();
     initMobileMenu();
+    if (window.PortfolioData && window.PortfolioData.ready) {
+      PortfolioData.ready().then(function () { applyProfileFromAdmin(); });
+    } else {
+      applyProfileFromAdmin();
+    }
   });
 })();

@@ -89,8 +89,8 @@
       </div>
     </main>
   </div>
-  <script src="assets/js/common.js"></script>
   <script src="assets/js/portfolio-data.js"></script>
+  <script src="assets/js/common.js"></script>
   <script>
     (function () {
       function escapeHtml(s) {
@@ -99,6 +99,7 @@
         div.textContent = s;
         return div.innerHTML;
       }
+      function run() {
       var container = document.getElementById('news-feed');
       var loading = document.getElementById('news-loading');
       var posts = window.PortfolioData && PortfolioData.getBlogPosts ? PortfolioData.getBlogPosts() : [];
@@ -129,6 +130,7 @@
         });
         return;
       }
+      if (!container || !loading) return;
       var url = 'https://dev.to/api/articles?per_page=8';
       fetch(url, { headers: { 'Accept': 'application/vnd.forem.api-v1+json' } })
         .then(function (r) { return r.ok ? r.json() : Promise.reject(new Error('Network error')); })
@@ -171,6 +173,12 @@
           loading.classList.remove('flex', 'items-center', 'justify-center', 'gap-2');
           loading.classList.add('text-amber-400');
         });
+      }
+      if (window.PortfolioData && window.PortfolioData.ready) {
+        PortfolioData.ready().then(run);
+      } else {
+        run();
+      }
     })();
   </script>
 </body>

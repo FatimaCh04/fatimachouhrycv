@@ -196,10 +196,11 @@
       </div>
     </main>
   </div>
-  <script src="assets/js/common.js"></script>
   <script src="assets/js/portfolio-data.js"></script>
+  <script src="assets/js/common.js"></script>
   <script>
     (function() {
+      function run() {
       var grid = document.getElementById('portfolio-grid');
       var filtersContainer = document.getElementById('portfolio-filters');
       if (!grid || !filtersContainer) return;
@@ -267,6 +268,12 @@
           filter(btn.getAttribute('data-filter'));
         });
       });
+      }
+      if (window.PortfolioData && window.PortfolioData.ready) {
+        PortfolioData.ready().then(run);
+      } else {
+        run();
+      }
     })();
   </script>
 </body>

@@ -88,6 +88,14 @@
             <a href="../index.html" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-700 text-slate-300 font-medium hover:bg-slate-600 transition">View site</a>
           </div>
         </div>
+        <div class="rounded-xl border border-slate-700 bg-slate-800/40 p-6 mt-6">
+          <h2 class="text-lg font-semibold text-white mb-2">Permanent data (live site)</h2>
+          <p class="text-slate-400 text-sm mb-4">Export current profile, projects, services &amp; posts as JSON. Put these files in the <code class="bg-slate-700 px-1 rounded">data/</code> folder and push to GitHub – then Vercel par sab visitors ko same content dikhega.</p>
+          <button type="button" id="export-data-btn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-white font-medium hover:opacity-90 transition">
+            <span class="material-symbols-outlined">download</span>
+            Export data (profile, projects, services, posts)
+          </button>
+        </div>
       </div>
     </main>
   </div>
@@ -99,6 +107,24 @@
       document.getElementById('stat-projects').textContent = PortfolioAdmin.getProjects().length;
       document.getElementById('stat-services').textContent = PortfolioAdmin.getServices().length;
       document.getElementById('logout-btn').addEventListener('click', function () { PortfolioAdmin.logout(); });
+      document.getElementById('export-data-btn').addEventListener('click', function () {
+        var profile = PortfolioAdmin.getProfile() || {};
+        var profileJson = JSON.stringify({ name: profile.name || '', title: profile.title || '', tagline: profile.tagline || '', photo: profile.photo || 'assets/images/profile.jpg', resumeUrl: profile.resumeUrl || '' }, null, 2);
+        var projects = PortfolioAdmin.getProjects();
+        var services = PortfolioAdmin.getServices();
+        var posts = PortfolioAdmin.getBlogPosts();
+        function download(filename, text) {
+          var a = document.createElement('a');
+          a.href = 'data:application/json;charset=utf-8,' + encodeURIComponent(text);
+          a.download = filename;
+          a.click();
+        }
+        download('profile.json', profileJson);
+        download('projects.json', JSON.stringify(projects.length ? projects : [], null, 2));
+        download('services.json', JSON.stringify(services.length ? services : [], null, 2));
+        download('posts.json', JSON.stringify(posts.length ? posts : [], null, 2));
+        alert('4 files download ho chuke. Inhe repo ke data/ folder mein rakho aur push karo.');
+      });
     })();
   </script>
 </body>

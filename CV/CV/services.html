@@ -131,10 +131,11 @@
       </div>
     </main>
   </div>
-  <script src="assets/js/common.js"></script>
   <script src="assets/js/portfolio-data.js"></script>
+  <script src="assets/js/common.js"></script>
   <script>
     (function() {
+      function run() {
       var grid = document.getElementById('services-grid');
       var list = window.PortfolioData && PortfolioData.getServices ? PortfolioData.getServices() : [];
       if (!grid || list.length === 0) return;
@@ -148,6 +149,12 @@
           '<p class="text-slate-300 text-sm mb-3">' + esc(s.description) + '</p>' +
           '<p class="text-primary font-semibold">' + esc(s.price) + '</p></div>';
       }).join('');
+      }
+      if (window.PortfolioData && window.PortfolioData.ready) {
+        PortfolioData.ready().then(run);
+      } else {
+        run();
+      }
     })();
   </script>
 </body>
