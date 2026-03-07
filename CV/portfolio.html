@@ -225,15 +225,13 @@
           var catLabel = categoryLabels[p.category] || p.category || 'Project';
           var isMobile = p.category === 'mobile-app';
           var isBlogger = p.category === 'blogger';
+          var imgUrl = (p.image && String(p.image).trim()) ? p.image : 'https://placehold.co/800x480/1e293b/64748b?text=Project';
+          var imgFallback = 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'800\' height=\'480\' viewBox=\'0 0 800 480\'%3E%3Crect fill=\'%231e293b\' width=\'800\' height=\'480\'/%3E%3Ctext fill=\'%2364748b\' font-family=\'sans-serif\' font-size=\'20\' x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\'%3EProject%3C/text%3E%3C/svg%3E';
           var imgBlock;
-          if (p.image) {
-            if (isMobile || isBlogger) {
-              imgBlock = '<div class="w-full bg-slate-800 shrink-0 flex items-center justify-center py-4" style="height:280px"><img src="' + esc(p.image) + '" alt="" class="max-h-full w-auto max-w-full object-contain object-center block" loading="lazy"/></div>';
-            } else {
-              imgBlock = '<div class="w-full h-48 bg-slate-800 shrink-0 overflow-hidden flex items-center justify-center"><img src="' + esc(p.image) + '" alt="" class="w-full h-full object-cover object-center block" loading="lazy" style="min-width:100%;min-height:100%"/></div>';
-            }
+          if (isMobile || isBlogger) {
+            imgBlock = '<div class="w-full bg-slate-800 shrink-0 flex items-center justify-center py-4" style="height:280px"><img src="' + esc(imgUrl) + '" alt="" class="max-h-full w-auto max-w-full object-contain object-center block" loading="lazy" onerror="this.onerror=null;this.src=\'' + imgFallback + '\'"/></div>';
           } else {
-            imgBlock = '<div class="w-full h-48 bg-slate-800 shrink-0 flex items-center justify-center"><span class="material-symbols-outlined text-6xl text-slate-400 group-hover:text-primary transition-colors">code_blocks</span></div>';
+            imgBlock = '<div class="w-full h-48 bg-slate-800 shrink-0 overflow-hidden flex items-center justify-center"><img src="' + esc(imgUrl) + '" alt="" class="w-full h-full object-cover object-center block" loading="lazy" style="min-width:100%;min-height:100%" onerror="this.onerror=null;this.src=\'' + imgFallback + '\'"/></div>';
           }
           return '<article class="portfolio-item rounded-xl border border-slate-700 overflow-hidden bg-slate-800/20 hover:bg-slate-800/50 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 hover:scale-[1.02] transition-all duration-200 cursor-pointer group flex flex-col" data-category="' + esc(p.category || 'web-development') + '">' +
             imgBlock +

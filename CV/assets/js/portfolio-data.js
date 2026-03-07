@@ -65,10 +65,16 @@
     return getProfileSync();
   }
 
+  var defaultProjectImage = 'https://placehold.co/800x480/1e293b/64748b?text=Project';
+  function ensureProjectImage(p) {
+    if (p && (!p.image || !String(p.image).trim())) p = Object.assign({}, p, { image: defaultProjectImage });
+    return p;
+  }
   function getProjects() {
-    if (cache.projects && cache.projects.length > 0) return cache.projects;
-    var list = get(KEYS.projects);
-    return list && list.length > 0 ? list : defaultProjects;
+    var list;
+    if (cache.projects && cache.projects.length > 0) list = cache.projects;
+    else { var fromStorage = get(KEYS.projects); list = fromStorage && fromStorage.length > 0 ? fromStorage : defaultProjects; }
+    return list.map(ensureProjectImage);
   }
 
   function getServices() {

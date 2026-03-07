@@ -90,6 +90,7 @@
   <script>
     (function () {
       var categoryLabels = { 'web-development': 'Web Development', 'react-development': 'React Development', 'mobile-app': 'Mobile App Development', 'wordpress': 'WordPress Development', 'desktop': 'Desktop', 'blogger': 'Blogger' };
+      function run() {
       var params = new URLSearchParams(window.location.search);
       var id = params.get('id');
       var content = document.getElementById('project-content');
@@ -112,16 +113,16 @@
       document.getElementById('project-category').textContent = catLabel.toUpperCase();
       document.getElementById('project-title').textContent = p.title || 'Untitled';
       document.getElementById('project-description').textContent = p.description || '';
-      if (p.image) {
-        var heroImg = document.getElementById('project-hero-image');
-        var heroWrap = document.getElementById('project-hero-image-wrap');
-        var isMobile = p.category === 'mobile-app';
-        heroImg.src = p.image;
-        heroImg.style.maxHeight = isMobile ? '560px' : '420px';
-        heroWrap.classList.remove('hidden');
-        heroWrap.classList.add('flex');
-        document.getElementById('project-hero-placeholder').classList.add('hidden');
-      }
+      var imgUrl = (p.image && String(p.image).trim()) ? p.image : 'https://placehold.co/800x480/1e293b/64748b?text=Project';
+      var heroImg = document.getElementById('project-hero-image');
+      var heroWrap = document.getElementById('project-hero-image-wrap');
+      var heroPlaceholder = document.getElementById('project-hero-placeholder');
+      heroImg.onerror = function () { this.onerror = null; heroWrap.classList.add('hidden'); heroPlaceholder.classList.remove('hidden'); };
+      heroImg.src = imgUrl;
+      heroImg.style.maxHeight = (p.category === 'mobile-app') ? '560px' : '420px';
+      heroWrap.classList.remove('hidden');
+      heroWrap.classList.add('flex');
+      heroPlaceholder.classList.add('hidden');
       var techs = Array.isArray(p.technologies) ? p.technologies : (p.technologies || '').split(',').map(function (t) { return t.trim(); }).filter(Boolean);
       document.getElementById('project-techs').innerHTML = techs.map(function (t) {
         return '<span class="px-3 py-1.5 bg-primary/20 text-primary rounded-lg text-sm font-medium">' + esc(t) + '</span>';
@@ -135,6 +136,12 @@
       }
       if (!p.demoLink && !p.githubLink) document.getElementById('project-actions').classList.add('hidden');
       document.title = (p.title || 'Project') + ' | Portfolio';
+      }
+      if (window.PortfolioData && window.PortfolioData.ready) {
+        PortfolioData.ready().then(run);
+      } else {
+        run();
+      }
     })();
   </script>
 </body>
