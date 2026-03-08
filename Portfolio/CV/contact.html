@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Contact | Fatima Choudhry Portfolio</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+  <link href="assets/css/site.css" rel="stylesheet"/>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: { "primary": "#4F46E5", "accent": "#22D3EE", "background-dark": "#0F172A", "sidebar": "#0F172A" },
+          fontFamily: { "display": ["Inter", "sans-serif"] },
+          borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+          boxShadow: { "glow": "0 4px 20px rgba(19, 91, 236, 0.25)" },
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-background-dark font-display text-slate-200 antialiased">
+  <div id="mobile-overlay" aria-hidden="true"></div>
+  <button type="button" id="mobile-menu-btn" class="hidden" aria-label="Open menu">
+    <span class="material-symbols-outlined text-2xl">menu</span>
+  </button>
+  <div class="flex min-h-screen">
+    <aside id="site-sidebar" class="fixed inset-y-0 left-0 w-72 bg-sidebar border-r-2 border-primary/60 flex flex-col z-50 overflow-hidden">
+      <div class="flex flex-col h-full min-h-0">
+        <div class="p-6 flex-1 min-h-0 overflow-y-auto">
+          <div class="flex flex-col items-center text-center mb-6">
+            <div class="profile-photo-wrapper relative mb-4">
+              <div class="size-24 rounded-full border-2 border-primary p-1 shadow-glow">
+                <img alt="Profile" class="profile-photo size-full rounded-full object-cover" src="assets/images/profile.jpg" onerror="this.onerror=null;this.src='assets/images/profile-placeholder.svg'"/>
+              </div>
+              <div class="absolute bottom-0 right-0 size-4 bg-emerald-500 border-2 border-sidebar rounded-full"></div>
+            </div>
+            <h1 class="profile-name text-xl font-bold text-white">Fatima Choudhry</h1>
+            <p class="profile-title text-xs font-medium text-primary mt-1 px-3 py-1 bg-primary/20 rounded-full">Software Engineering Student</p>
+            <p class="profile-tagline text-sm text-slate-400 mt-3 leading-relaxed px-2">Building scalable automation and custom software solutions.</p>
+          </div>
+          <nav class="space-y-1">
+            <a class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-400 rounded-xl hover:bg-slate-800 hover:text-white transition-all" href="index.html"><span class="material-symbols-outlined">home</span>Home</a>
+            <a class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-400 rounded-xl hover:bg-slate-800 hover:text-white transition-all" href="about.html"><span class="material-symbols-outlined">person</span>About</a>
+            <a class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-400 rounded-xl hover:bg-slate-800 hover:text-white transition-all" href="services.html"><span class="material-symbols-outlined">work</span>Service</a>
+            <a class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-400 rounded-xl hover:bg-slate-800 hover:text-white transition-all" href="portfolio.html"><span class="material-symbols-outlined">folder_open</span>Portfolio</a>
+            <a class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-400 rounded-xl hover:bg-slate-800 hover:text-white transition-all" href="blog.html"><span class="material-symbols-outlined">article</span>Blog</a>
+            <a class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-400 rounded-xl hover:bg-slate-800 hover:text-white transition-all" href="resume.html"><span class="material-symbols-outlined">description</span>Resume</a>
+            <a class="flex items-center gap-3 px-4 py-3 text-sm font-semibold rounded-xl bg-slate-700/80 text-white transition-all" href="contact.html"><span class="material-symbols-outlined">alternate_email</span>Contact</a>
+          </nav>
+          <div class="pt-6 mt-6 border-t border-slate-700 grid grid-cols-3 gap-2">
+            <a class="flex items-center justify-center p-2 rounded-lg bg-slate-800 text-slate-400 hover:text-primary transition-colors" href="https://github.com/FatimaCh04/FA23-BSE-123-5B-Fatima-Ch-" target="_blank" rel="noopener"><svg class="size-5 fill-current" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg></a>
+            <a class="flex items-center justify-center p-2 rounded-lg bg-slate-800 text-slate-400 hover:text-primary transition-colors" href="https://www.linkedin.com/in/fatima-choudhry-714423358/" target="_blank" rel="noopener"><svg class="size-5 fill-current" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"></path></svg></a>
+            <a class="flex items-center justify-center p-2 rounded-lg bg-slate-800 text-slate-400 hover:text-primary transition-colors" href="contact.html"><span class="material-symbols-outlined text-xl">mail</span></a>
+          </div>
+        </div>
+      </div>
+    </aside>
+    <main id="site-main" class="flex-1 ml-72 p-8">
+      <div class="max-w-5xl mx-auto space-y-8">
+        <section class="rounded-xl bg-slate-800/50 border border-slate-700 p-10 shadow-sm">
+          <h2 class="text-3xl font-extrabold text-white mb-4 flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary">alternate_email</span>
+            Contact
+          </h2>
+          <p class="text-lg text-slate-400 mb-8">I'm open to automation and custom software opportunities. Get in touch for collaboration or just to say hi.</p>
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div>
+              <h3 class="text-lg font-bold text-white mb-4">Send a message</h3>
+              <!-- Message sirf tab dikhega jab user "Send Message" click kare -->
+              <div id="form-message" class="hidden mb-4 p-4 rounded-lg text-sm font-medium"></div>
+              <!-- Formspree ID paste karein: YOUR_FORM_ID ki jagah apna ID (e.g. xyzabcde) -->
+              <form id="contact-form" class="space-y-4" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+                <input type="hidden" name="_subject" value="Portfolio Contact - New message"/>
+                <div>
+                  <label for="name" class="block text-sm font-medium text-slate-300 mb-1">Name</label>
+                  <input type="text" id="name" name="name" class="w-full px-4 py-3 rounded-lg border border-slate-600 bg-slate-800 text-white focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Your name" required/>
+                </div>
+                <div>
+                  <label for="email" class="block text-sm font-medium text-slate-300 mb-1">Email</label>
+                  <input type="email" id="email" name="email" class="w-full px-4 py-3 rounded-lg border border-slate-600 bg-slate-800 text-white focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="you@example.com" required/>
+                </div>
+                <div>
+                  <label for="message" class="block text-sm font-medium text-slate-300 mb-1">Message</label>
+                  <textarea id="message" name="message" rows="4" class="w-full px-4 py-3 rounded-lg border border-slate-600 bg-slate-800 text-white focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Your message..." required></textarea>
+                </div>
+                <button type="submit" id="submit-btn" class="w-full bg-primary text-slate-900 px-6 py-3 rounded-lg font-semibold hover:bg-teal-400 transition-colors flex items-center justify-center gap-2">
+                  <span class="material-symbols-outlined">send</span>
+                  Send Message
+                </button>
+              </form>
+            </div>
+            <div>
+              <h3 class="text-lg font-bold text-white mb-4">Other ways to reach me</h3>
+              <ul class="space-y-4">
+                <li class="flex items-center gap-3 p-4 rounded-xl bg-slate-800 border border-slate-700">
+                  <span class="material-symbols-outlined text-primary">mail</span>
+                  <div>
+                    <p class="font-medium text-white">Email</p>
+                    <a href="mailto:fatimachoudhry94@gmail.com" class="text-primary hover:underline">fatimachoudhry94@gmail.com</a>
+                  </div>
+                </li>
+                <li class="flex items-center gap-3 p-4 rounded-xl bg-slate-800 border border-slate-700">
+                  <span class="flex items-center justify-center size-10 rounded-lg bg-slate-700 text-primary shrink-0">
+                    <svg class="size-5 fill-current" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                  </span>
+                  <div>
+                    <p class="font-medium text-white">GitHub</p>
+                    <a href="https://github.com/FatimaCh04/FA23-BSE-123-5B-Fatima-Ch-" target="_blank" rel="noopener" class="text-primary hover:underline">GitHub</a>
+                  </div>
+                </li>
+                <li class="flex items-center gap-3 p-4 rounded-xl bg-slate-800 border border-slate-700">
+                  <span class="flex items-center justify-center size-10 rounded-lg bg-slate-700 text-primary shrink-0">
+                    <svg class="size-5 fill-current" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                  </span>
+                  <div>
+                    <p class="font-medium text-white">LinkedIn</p>
+                    <a href="https://www.linkedin.com/in/fatima-choudhry-714423358/" target="_blank" rel="noopener" class="text-primary hover:underline">LinkedIn</a>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+        <section class="bg-primary/20 border border-primary rounded-xl p-8 text-white shadow-glow text-center">
+          <h4 class="text-2xl font-bold mb-2">Let's build something together</h4>
+          <p class="text-slate-300 max-w-xl mx-auto">Whether you have a project in mind or just want to connect, I'd love to hear from you.</p>
+        </section>
+      </div>
+    </main>
+  </div>
+  <script src="assets/js/portfolio-data.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    (function() {
+      var form = document.getElementById('contact-form');
+      var msgEl = document.getElementById('form-message');
+      var btn = document.getElementById('submit-btn');
+      if (!form || !msgEl) return;
+      function hideMessage() { msgEl.classList.add('hidden'); }
+      form.querySelectorAll('input, textarea').forEach(function(el) {
+        el.addEventListener('focus', hideMessage);
+        el.addEventListener('input', hideMessage);
+      });
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (form.action.indexOf('YOUR_FORM_ID') !== -1) {
+          msgEl.textContent = 'Please set up Formspree: replace YOUR_FORM_ID in contact.html with your Formspree form ID. See assets/FORMSPREE-SETUP.txt';
+          msgEl.className = 'mb-4 p-4 rounded-lg text-sm font-medium bg-amber-500/20 text-amber-200 border border-amber-500/50';
+          msgEl.classList.remove('hidden');
+          return;
+        }
+        btn.disabled = true;
+        msgEl.classList.add('hidden');
+        fetch(form.action, {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { 'Accept': 'application/json' }
+        }).then(function(r) {
+          if (r.ok) {
+            msgEl.textContent = 'Message sent! I will get back to you soon.';
+            msgEl.className = 'mb-4 p-4 rounded-lg text-sm font-medium bg-emerald-500/20 text-emerald-200 border border-emerald-500/50';
+            form.reset();
+          } else {
+            msgEl.textContent = 'Something went wrong. Please try again or email directly at fatimachoudhry94@gmail.com';
+            msgEl.className = 'mb-4 p-4 rounded-lg text-sm font-medium bg-red-500/20 text-red-200 border border-red-500/50';
+          }
+          msgEl.classList.remove('hidden');
+          btn.disabled = false;
+        }).catch(function() {
+          msgEl.textContent = 'Network error. Please try again or email fatimachoudhry94@gmail.com';
+          msgEl.className = 'mb-4 p-4 rounded-lg text-sm font-medium bg-red-500/20 text-red-200 border border-red-500/50';
+          msgEl.classList.remove('hidden');
+          btn.disabled = false;
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

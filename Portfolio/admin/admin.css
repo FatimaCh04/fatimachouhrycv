@@ -1,0 +1,14 @@
+/* Portfolio Admin - control panel overrides */
+.admin-sidebar a.active {
+  background: rgba(20, 184, 166, 0.2);
+  color: #14b8a6;
+  border-left: 3px solid #14b8a6;
+}
+
+.admin-card {
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+.admin-card:hover {
+  border-color: rgba(20, 184, 166, 0.4);
+  box-shadow: 0 4px 20px rgba(20, 184, 166, 0.1);
+}
