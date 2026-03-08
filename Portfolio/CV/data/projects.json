@@ -1,0 +1,165 @@
+[
+  {
+    "id": "mmhewaahqspypc",
+    "title": "Teacher Assistant App in React Desktop",
+    "description": "This is a Desktop applciation which is created in React Desktop Electron Library",
+    "technologies": [
+      "React",
+      "Electron"
+    ],
+    "category": "react-development",
+    "githubLink": "https://github.com/FatimaCh04/FA23-BSE-123-6B-Fatima-Ch-AWT/tree/main/CUI%20Teacher%20Portal",
+    "demoLink": "",
+    "image": "assets/images/projects/mmhewaahqspypc.png"
+  },
+  {
+    "id": "mmheyuk2iwgqu9",
+    "title": "Smart Clinic & Patient Management System",
+    "description": "KiviCare is a modern healthcare management system designed to simplify clinic operations, including patient records, appointments, and doctor management.\nIt helps healthcare providers manage their workflow efficiently while improving patient care and communication.",
+    "technologies": [
+      "Flutter"
+    ],
+    "category": "mobile-app",
+    "githubLink": "https://github.com/FatimaCh04/FA23-BSE-123-5B-Fatima-Ch-/tree/main/Semester%20Project",
+    "demoLink": "",
+    "image": "assets/images/projects/mmheyuk2iwgqu9.png"
+  },
+  {
+    "id": "mmhf0wmzvbt400",
+    "title": "Online Pizza Ordering Website",
+    "description": "Delicious Pizza is an online pizza ordering website where customers can explore different pizza flavors and place orders easily.\nThe website provides a simple and user-friendly interface for browsing the menu and ordering pizza quickly.",
+    "technologies": [
+      "HTML",
+      "CSS",
+      "JavaScript",
+      "PHP",
+      "MySQL"
+    ],
+    "category": "web-development",
+    "githubLink": "https://github.com/FatimaCh04/Semester-Projects/tree/main/pizza-laravel",
+    "demoLink": "",
+    "image": "assets/images/projects/mmhf0wmzvbt400.png"
+  },
+  {
+    "id": "mmhf2qkyugfb6c",
+    "title": "Smart Task Manager Mobile Application",
+    "description": "This mobile app is designed to provide users with a simple and interactive platform to perform tasks easily on their smartphones.\nIt focuses on user-friendly design, smooth performance, and useful features to improve the mobile experience.",
+    "technologies": [
+      "Flutter",
+      "React Native",
+      "Kotlin"
+    ],
+    "category": "mobile-app",
+    "githubLink": "https://github.com/FatimaCh04/FA23-BSE-123-5B-Fatima-Ch-/tree/main/Task%20Management%20Application",
+    "demoLink": "",
+    "image": "assets/images/projects/mmhf2qkyugfb6c.png"
+  },
+  {
+    "id": "mmhf3zhc75l0rd",
+    "title": "Smart Web Application for Cafe Operations",
+    "description": "Cafe Management System is a web application designed to manage cafe operations such as orders, menu items, and billing.\nIt helps staff handle customer orders efficiently and keeps records organized for smooth cafe management.",
+    "technologies": [
+      "C#",
+      "MySQL"
+    ],
+    "category": "desktop",
+    "githubLink": "",
+    "demoLink": "",
+    "image": "assets/images/projects/mmhf3zhc75l0rd.png"
+  },
+  {
+    "id": "mmhf5l9fi4a6mg",
+    "title": "Online Clinic & Healthcare Management System",
+    "description": "KiviCare is a web-based healthcare management system designed to manage patients, doctors, appointments, and medical records in one platform.\nIt helps clinics and hospitals organize their operations efficiently and provide better healthcare services online.",
+    "technologies": [
+      "Laravel"
+    ],
+    "category": "wordpress",
+    "githubLink": "https://github.com/FatimaCh04/FA23-BSE-123-5B-Fatima-Ch-/tree/main/Semester%20Project",
+    "demoLink": "",
+    "image": "assets/images/projects/mmhf5l9fi4a6mg.png"
+  },
+  {
+    "id": "mmhf6yo6jjn2h9",
+    "title": "Secure Online Voting Platform",
+    "description": "Blockchain Voting System is a secure digital voting platform that uses blockchain technology to ensure transparent and tamper-proof elections.\nIt allows users to cast votes safely while maintaining accuracy, security, and trust in the voting process.",
+    "technologies": [
+      "Python",
+      "Tkinter"
+    ],
+    "category": "desktop",
+    "githubLink": "https://github.com/FatimaCh04/Semester-Projects",
+    "demoLink": "",
+    "image": "assets/images/projects/mmhf6yo6jjn2h9.png"
+  },
+  {
+    "id": "mmhf81qomd0d63",
+    "title": "Smart Academic Management Platform",
+    "description": "University Management System is a Python-based application designed to manage student records, courses, and faculty information efficiently.\nIt helps universities organize academic data and simplifies administrative tasks through a user-friendly system.",
+    "technologies": [
+      "Python",
+      "MySQL"
+    ],
+    "category": "desktop",
+    "githubLink": "https://github.com/FatimaCh04/Semester-Projects/blob/main/University%20Mangement%20System%20.rar",
+    "demoLink": "",
+    "image": "assets/images/projects/mmhf81qomd0d63.png"
+  },
+  {
+    "id": "mmhfshnaxb3iyb",
+    "title": "Smart Point of Sale System",
+    "description": "POS Mobile App is a mobile application designed to manage sales, billing, and inventory in retail stores and small businesses.\nIt helps business owners process transactions quickly and keep track of daily sales easily.",
+    "technologies": [
+      "Flutter",
+      "React Native",
+      "Firebase"
+    ],
+    "category": "mobile-app",
+    "githubLink": "https://github.com/FatimaCh04/FA23-BSE-123-5B-Fatima-Ch-/tree/main/smart_pos",
+    "demoLink": "",
+    "image": "assets/images/projects/mmhfshnaxb3iyb.png"
+  },
+  {
+    "id": "mmhfy6tub3mspq",
+    "title": "Car Racing Game",
+    "description": "Car Racing Game is a simple game developed in Assembly language where the player controls a car and avoids obstacles on the road.\nThe game focuses on basic graphics, keyboard controls, and low-level programming concepts.",
+    "technologies": [
+      "Assembly Language"
+    ],
+    "category": "desktop",
+    "githubLink": "",
+    "demoLink": "",
+    "image": "assets/images/projects/mmhfy6tub3mspq.png"
+  },
+  {
+    "id": "mmhgnh0nkp765f",
+    "title": "Digital Library Management Platform",
+    "description": "Library Management System is a software application designed to manage books, members, and borrowing records in a library.\nIt helps librarians easily issue and return books while keeping library data organized and efficient.",
+    "technologies": [
+      "HTML",
+      "CSS",
+      "JavaScript",
+      "MySQL."
+    ],
+    "category": "web-development",
+    "githubLink": "https://github.com/FatimaCh04/FA23-BSE-123-6B-Fatima-Ch-AWT/tree/main/LMS",
+    "demoLink": "",
+    "image": "assets/images/projects/mmhgnh0nkp765f.png"
+  },
+  {
+    "id": "mmhgqz3qyrryh2",
+    "title": "COMSATS Student Portal",
+    "description": "COMSATS Portal is a web-based Learning Management System that allows students to manage their courses, profiles, and academic information.\nIt provides features like course registration, credit tracking, and student dashboard for an organized learning experience.",
+    "technologies": [
+      "HTML",
+      "CSS",
+      "JavaScript",
+      "Bootstrap",
+      "JSON/XML"
+    ],
+    "category": "web-development",
+    "githubLink": "",
+    "demoLink": "",
+    "image": "assets/images/projects/mmhgqz3qyrryh2.png"
+  }
+]
