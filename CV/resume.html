@@ -36,8 +36,16 @@
       #resume-content img {
         max-width: 100%;
         height: auto;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      /* Profile photo in resume: ensure it prints with size */
+      #resume-content .profile-photo {
+        width: 7rem !important;
+        height: 7rem !important;
+        min-width: 7rem !important;
+        min-height: 7rem !important;
+        object-fit: cover !important;
       }
       .resume-project-img {
         width: 100%;
@@ -110,7 +118,7 @@
         </div>
 
         <div id="resume-content" class="print-resume rounded-xl bg-slate-800/50 border border-slate-700 shadow-lg overflow-hidden">
-          <!-- Resume Header: Name, Title, Contact, Photo (like sir's) -->
+          <!-- Resume Header: Name, Title, Contact (left), Photo (right) -->
           <div class="p-8 md:p-10 border-b border-slate-700 flex flex-col md:flex-row md:items-start md:justify-between gap-6">
             <div class="flex-1">
               <h1 class="resume-name text-3xl md:text-4xl font-extrabold text-white mb-2">Fatima Choudhry</h1>
@@ -129,7 +137,7 @@
             </div>
           </div>
 
-          <!-- Personal Information (two-column like sir's) -->
+          <!-- Personal Information -->
           <div class="p-8 md:p-10 border-b border-slate-700">
             <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
               <span class="material-symbols-outlined text-primary">info</span>
@@ -230,7 +238,7 @@
           var div = document.createElement('div');
           div.className = 'rounded-lg border border-slate-700 overflow-hidden bg-slate-800/50';
           var imgHtml = p.image
-            ? '<img class="resume-project-img w-full" src="' + p.image + '" alt="" loading="lazy"/>'
+            ? '<img class="resume-project-img w-full" src="' + p.image + '" alt="" loading="lazy" onerror="this.onerror=null;this.src=\'assets/images/profile-placeholder.svg\'"/>'
             : '<div class="resume-project-img flex items-center justify-center"><span class="material-symbols-outlined text-4xl text-slate-500">image</span></div>';
           var title = (p.title || 'Project').replace(/</g, '&lt;').replace(/>/g, '&gt;');
           var desc = (p.description || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -251,7 +259,16 @@
       }
       document.getElementById('resume-year').textContent = new Date().getFullYear();
       var printBtn = document.getElementById('resume-print-btn');
-      if (printBtn) printBtn.addEventListener('click', function() { window.print(); });
+      if (printBtn) printBtn.addEventListener('click', function() {
+        var resumePhoto = document.querySelector('#resume-content .profile-photo');
+        function doPrint() { window.print(); }
+        if (resumePhoto && resumePhoto.tagName === 'IMG' && resumePhoto.src && !resumePhoto.complete) {
+          resumePhoto.onload = doPrint;
+          resumePhoto.onerror = doPrint;
+        } else {
+          doPrint();
+        }
+      });
     })();
   </script>
 </body>

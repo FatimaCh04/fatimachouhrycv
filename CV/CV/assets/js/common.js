@@ -24,7 +24,7 @@
   function initTypingEffect() {
     var el = document.getElementById('tagline-typed');
     if (!el) return;
-    var text = 'Dream it. Build it. Live it.|';
+    var text = 'The Only way to do great work is to love what you do.|';
     var i = 0;
     var cursor = '|';
     function tick() {

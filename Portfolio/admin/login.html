@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Login | Portfolio</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined&amp;display=swap" rel="stylesheet"/>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: { primary: '#14b8a6', 'background-dark': '#0f172a' },
+          fontFamily: { display: ['Inter', 'sans-serif'] }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-background-dark font-display text-slate-100 antialiased min-h-screen flex items-center justify-center p-4">
+  <div class="w-full max-w-md">
+    <div class="rounded-2xl border border-slate-700 bg-slate-800/50 p-8 shadow-xl">
+      <div class="text-center mb-8">
+        <span class="material-symbols-outlined text-5xl text-primary mb-2 block">admin_panel_settings</span>
+        <h1 class="text-2xl font-bold text-white">Portfolio Admin</h1>
+        <p class="text-slate-400 text-sm mt-1">Sign in with your Gmail to manage your site</p>
+      </div>
+
+      <div id="google-signin-area">
+        <div id="google-btn" class="flex justify-center min-h-[44px]"></div>
+        <div id="google-setup-msg" class="hidden mt-4 p-4 rounded-xl bg-slate-800/80 border border-slate-600 text-left text-sm text-slate-400">
+          <p class="font-medium text-slate-300 mb-2">Sign in with Google is not set up yet.</p>
+          <ol class="list-decimal list-inside space-y-1.5 mb-3">
+            <li>Open <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener" class="text-primary hover:underline">Google Cloud Console → Credentials</a></li>
+            <li>Create credentials → <strong>OAuth client ID</strong> (application type: Web application)</li>
+            <li>Under <strong>Authorized JavaScript origins</strong> add: <code class="bg-slate-700 px-1 rounded">http://localhost:8080</code> (and your live site URL if you have one)</li>
+            <li>Copy the <strong>Client ID</strong>, open <code class="bg-slate-700 px-1 rounded">admin/admin.js</code> and set <code class="bg-slate-700 px-1 rounded">ADMIN_GOOGLE_CLIENT_ID = 'your-client-id.apps.googleusercontent.com'</code></li>
+          </ol>
+          <p class="text-xs">Your Gmail (fatimachoudhry94@gmail.com) is already in the allowed list.</p>
+        </div>
+        <p id="login-error" class="text-sm text-red-400 text-center mt-3 hidden"></p>
+      </div>
+
+      <div class="relative my-6">
+        <span class="absolute inset-0 flex items-center"><span class="w-full border-t border-slate-600"></span></span>
+        <span class="relative flex justify-center text-xs text-slate-500">for now</span>
+      </div>
+      <form id="login-form" class="space-y-4">
+        <input type="text" id="username" placeholder="Username" value="admin" class="w-full px-4 py-2 rounded-xl bg-slate-800 border border-slate-600 text-white placeholder-slate-500 focus:border-primary outline-none text-sm"/>
+        <input type="password" id="password" placeholder="Password" class="w-full px-4 py-2 rounded-xl bg-slate-800 border border-slate-600 text-white placeholder-slate-500 focus:border-primary outline-none text-sm" autocomplete="current-password"/>
+        <button type="submit" class="w-full py-2.5 rounded-xl bg-primary text-slate-900 font-semibold hover:bg-teal-400 transition-colors text-sm">Open dashboard</button>
+      </form>
+    </div>
+    <p class="text-center text-slate-500 text-sm mt-6"><a href="../index.html" class="text-primary hover:underline">← Back to site</a></p>
+  </div>
+  <script src="admin.js"></script>
+  <script>
+    (function () {
+      if (PortfolioAdmin.isLoggedIn()) {
+        window.location.href = 'dashboard.html';
+        return;
+      }
+      var err = document.getElementById('login-error');
+      var googleArea = document.getElementById('google-signin-area');
+      var googleSetupMsg = document.getElementById('google-setup-msg');
+
+      function handleCredentialResponse(response) {
+        if (!response || !response.credential) return;
+        try {
+          var payload = JSON.parse(atob(response.credential.split('.')[1]));
+          var email = payload.email || payload.sub;
+          if (PortfolioAdmin.loginWithGoogle(email)) {
+            window.location.href = 'dashboard.html';
+          } else {
+            err.textContent = 'This Gmail account is not allowed as admin.';
+            err.classList.remove('hidden');
+          }
+        } catch (e) {
+          err.textContent = 'Sign-in failed. Try again.';
+          err.classList.remove('hidden');
+        }
+      }
+
+      var clientId = PortfolioAdmin.getGoogleClientId ? PortfolioAdmin.getGoogleClientId() : '';
+      if (clientId && clientId.indexOf('apps.googleusercontent.com') !== -1) {
+        function initGoogleBtn() {
+          if (typeof google === 'undefined' || !google.accounts || !google.accounts.id) {
+            setTimeout(initGoogleBtn, 100);
+            return;
+          }
+          google.accounts.id.initialize({
+            client_id: clientId,
+            callback: handleCredentialResponse,
+            auto_select: false
+          });
+          google.accounts.id.renderButton(document.getElementById('google-btn'), {
+            type: 'standard',
+            theme: 'filled_black',
+            size: 'large',
+            width: 320,
+            text: 'continue_with'
+          });
+        }
+        initGoogleBtn();
+      } else {
+        googleSetupMsg.classList.remove('hidden');
+      }
+
+      document.getElementById('login-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+        var user = document.getElementById('username').value.trim();
+        var pass = document.getElementById('password').value;
+        err.classList.add('hidden');
+        if (PortfolioAdmin.login(user, pass)) {
+          window.location.href = 'dashboard.html';
+        } else {
+          err.textContent = 'Invalid username or password.';
+          err.classList.remove('hidden');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
