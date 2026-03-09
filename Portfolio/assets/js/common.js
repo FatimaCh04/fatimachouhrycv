@@ -41,15 +41,26 @@
 
   function initMobileMenu() {
     var btn = document.getElementById('mobile-menu-btn');
+    var nav = document.getElementById('mobile-nav');
     var overlay = document.getElementById('mobile-overlay');
-    if (!btn) return;
-    function openMenu() { document.body.classList.add('mobile-menu-open'); }
-    function closeMenu() { document.body.classList.remove('mobile-menu-open'); }
+    if (!btn || !nav) return;
+    function openMenu() { 
+      nav.classList.remove('hidden');
+      if(overlay) overlay.classList.remove('hidden');
+    }
+    function closeMenu() { 
+      nav.classList.add('hidden');
+      if(overlay) overlay.classList.add('hidden');
+    }
     btn.addEventListener('click', function () {
-      document.body.classList.toggle('mobile-menu-open');
+      if (nav.classList.contains('hidden')) {
+        openMenu();
+      } else {
+        closeMenu();
+      }
     });
     if (overlay) overlay.addEventListener('click', closeMenu);
-    document.querySelectorAll('#site-sidebar a[href]').forEach(function (link) {
+    document.querySelectorAll('#mobile-nav a[href]').forEach(function (link) {
       link.addEventListener('click', closeMenu);
     });
   }
