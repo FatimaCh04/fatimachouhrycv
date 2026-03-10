@@ -1,0 +1,8 @@
+{
+  "rssFeeds": [
+    { "url": "https://techcrunch.com/feed/", "name": "TechCrunch" },
+    { "url": "https://www.theverge.com/rss/index.xml", "name": "The Verge" },
+    { "url": "https://feeds.bbci.co.uk/news/technology/rss.xml", "name": "BBC Technology" },
+    { "url": "https://www.wired.com/feed/rss", "name": "Wired" }
+  ]
+}
