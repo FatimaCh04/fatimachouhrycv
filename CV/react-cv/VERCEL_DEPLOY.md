@@ -1,21 +1,30 @@
-# Vercel par 404 fix
+# Fix 404 on Vercel
 
-Agar deploy ke baad **404: NOT_FOUND** aaye to ye check karein:
+If you see **"Congratulations!"** but then **404: NOT FOUND** when you open the site, Vercel is building from the wrong folder. Fix the **Root Directory** and redeploy.
 
-## 1. Root Directory sahi karein
+## Step 1: Set Root Directory
 
-- Vercel → apna project → **Settings** → **General**
-- **Root Directory** mein **kuch mat likhein** (empty chhor dein) ya sirf `.` likhein
-- Agar wahan **CV** ya koi folder name hai to **hata dein** — is project ka app repo ke **root** par hai, kisi subfolder mein nahi
+1. Open [Vercel Dashboard](https://vercel.com) → your project → **Settings** → **General**.
+2. Find **Root Directory**.
+3. Set it to the folder that contains **this app’s** `package.json`:
+   - **If your GitHub repo only contains this app** (repo root = this `react-cv` folder): leave Root Directory **empty** or `.`
+   - **If your repo has this app inside a subfolder** (e.g. `CV/react-cv`): set Root Directory to **`CV/react-cv`** (no leading slash).
 
-## 2. Build settings (usually theek rehte hain)
+   So Vercel runs `npm install` and `npm run build` inside that folder and finds `dist/` and `index.html`.
 
-- **Framework Preset:** Vite (ya Other)
-- **Build Command:** `npm run build` (vercel.json se aa jata hai)
-- **Output Directory:** `dist` (vercel.json se aa jata hai)
+4. Click **Save**.
 
-## 3. Save & Redeploy
+## Step 2: Build settings (should already be correct)
 
-- **Save** karein, phir **Deployments** → latest deployment → **Redeploy**
+- **Framework Preset:** Vite (or “Other”)
+- **Build Command:** `npm run build` (from `vercel.json`)
+- **Output Directory:** `dist` (from `vercel.json`)
 
-Isse 404 hat jana chahiye aur site chalni chahiye.
+No need to change these if they’re already set.
+
+## Step 3: Redeploy
+
+- Go to **Deployments** → open the latest deployment → **⋯** (three dots) → **Redeploy**.
+- Wait for the build to finish, then open your site again.
+
+After this, the 404 should be gone and the site should load.
