@@ -1,1 +1,38 @@
-[]
+[
+  {
+    "title": "Web Development",
+    "description": "Custom websites and web apps with React, Node.js, and modern tooling. Responsive, accessible, and performant.",
+    "price": "$35/hour",
+    "icon": "code"
+  },
+  {
+    "title": "API Design & Backend",
+    "description": "RESTful APIs, database design, and server logic with FastAPI, Express, or Node. Clean, documented, and scalable.",
+    "price": "$45/hour",
+    "icon": "api"
+  },
+  {
+    "title": "Dashboards & Tools",
+    "description": "Internal tools, admin panels, and data dashboards. Tailwind-based UI with clear information hierarchy.",
+    "price": "$40/hour",
+    "icon": "dashboard"
+  },
+  {
+    "title": "DevOps & Deployment",
+    "description": "Docker, CI/CD, and cloud deployment (e.g. AWS). Reliable, reproducible environments.",
+    "price": "$50/hour",
+    "icon": "rocket_launch"
+  },
+  {
+    "title": "React Development",
+    "description": "Build dynamic and interactive web applications using React.js. Experienced in creating reusable components, managing state, and developing fast single-page applications.",
+    "price": "$42/hour",
+    "icon": "hub"
+  },
+  {
+    "title": "Mobile App Development",
+    "description": "Develop cross-platform mobile applications using modern frameworks and tools. Focus on performance, user experience, and scalable mobile solutions.",
+    "price": "$48/hour",
+    "icon": "smartphone"
+  }
+]
