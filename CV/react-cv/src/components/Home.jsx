@@ -26,8 +26,7 @@ function Home() {
   }, []);
 
   const handleDownloadResume = () => {
-    // Basic logic to mimic the original download button behavior
-    window.open('resume.html', '_blank');
+    window.open('/resume', '_blank');
   };
 
   return (
