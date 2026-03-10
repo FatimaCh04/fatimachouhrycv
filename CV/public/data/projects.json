@@ -1,0 +1,15 @@
+[
+  {
+    "id": "mmhewaahqspypc",
+    "title": "Teacher Assistant App in React Desktop",
+    "description": "This is a Desktop applciation which is created in React Desktop Electron Library",
+    "technologies": [
+      "React",
+      "Electron"
+    ],
+    "category": "react-development",
+    "githubLink": "https://github.com/FatimaCh04/FA23-BSE-123-6B-Fatima-Ch-AWT/tree/main/CUI%20Teacher%20Portal",
+    "demoLink": "",
+    "image": ""
+  }
+]
