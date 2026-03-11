@@ -11,8 +11,11 @@ const BLOG_FILTERS = [
 
 const CLIENT_FEEDS = [
   { url: 'https://www.islamicity.org/feed/', type: 'Islamic', name: 'Islamicity' },
-  { url: 'https://www.reddit.com/r/funny/.rss', type: 'Funny', name: 'Reddit r/funny' },
+  { url: 'https://www.islamicity.org/feed', type: 'Islamic', name: 'Islamicity' },
   { url: 'https://www.theonion.com/feeds/daily/', type: 'Funny', name: 'The Onion' },
+  { url: 'https://www.theonion.com/rss', type: 'Funny', name: 'The Onion' },
+  { url: 'https://www.reddit.com/r/funny/.rss', type: 'Funny', name: 'Reddit r/funny' },
+  { url: 'https://www.cracked.com/feed/', type: 'Funny', name: 'Cracked' },
   { url: 'https://feeds.bbci.co.uk/news/rss.xml', type: 'Informative', name: 'BBC News' },
 ];
 
@@ -76,14 +79,18 @@ function parseRssInBrowser(xml, type, sourceName) {
   return items;
 }
 
-async function fetchWithProxy(url, timeout = 10000) {
+async function fetchWithProxy(url, timeout = 12000) {
   const proxies = [
     `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
     `https://corsproxy.io/?${encodeURIComponent(url)}`,
+    `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
   ];
   for (const proxyUrl of proxies) {
     try {
-      const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(timeout) });
+      const res = await fetch(proxyUrl, {
+        signal: AbortSignal.timeout(timeout),
+        headers: { 'Accept': 'application/rss+xml, application/xml, text/xml, */*' },
+      });
       if (res.ok) return await res.text();
     } catch (_) {
       /* try next proxy */
@@ -92,11 +99,21 @@ async function fetchWithProxy(url, timeout = 10000) {
   return null;
 }
 
+function dedupeArticles(articles) {
+  const seen = new Set();
+  return articles.filter((a) => {
+    const key = (a.link || a.title || '').trim() || a.id;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
 async function fetchRssClient() {
   const results = await Promise.all(
     CLIENT_FEEDS.map(async (feed) => {
       try {
-        const xml = await fetchWithProxy(feed.url, 10000);
+        const xml = await fetchWithProxy(feed.url, 12000);
         if (!xml) return [];
         return parseRssInBrowser(xml, feed.type, feed.name);
       } catch (_) {
@@ -105,8 +122,9 @@ async function fetchRssClient() {
     })
   );
   const all = results.flat();
-  all.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
-  return all.slice(0, 24);
+  const deduped = dedupeArticles(all);
+  deduped.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+  return deduped.slice(0, 24);
 }
 
 const BLOG_CACHE_KEY = 'blog_articles';

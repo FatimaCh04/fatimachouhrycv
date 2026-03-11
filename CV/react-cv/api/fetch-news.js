@@ -4,9 +4,15 @@
  */
 
 const FEEDS = [
+  // Islamic – primary and backup
   { url: 'https://www.islamicity.org/feed/', type: 'Islamic', name: 'Islamicity' },
-  { url: 'https://www.reddit.com/r/funny/.rss', type: 'Funny', name: 'Reddit r/funny' },
+  { url: 'https://www.islamicity.org/feed', type: 'Islamic', name: 'Islamicity' },
+  // Funny – multiple sources (Reddit often blocks; Onion/Cracked more reliable)
   { url: 'https://www.theonion.com/feeds/daily/', type: 'Funny', name: 'The Onion' },
+  { url: 'https://www.theonion.com/rss', type: 'Funny', name: 'The Onion' },
+  { url: 'https://www.reddit.com/r/funny/.rss', type: 'Funny', name: 'Reddit r/funny' },
+  { url: 'https://www.cracked.com/feed/', type: 'Funny', name: 'Cracked' },
+  // Informative
   { url: 'https://feeds.bbci.co.uk/news/rss.xml', type: 'Informative', name: 'BBC News' },
   { url: 'https://www.sciencedaily.com/rss/all.xml', type: 'Informative', name: 'Science Daily' },
   { url: 'https://feeds.feedburner.com/techcrunch/', type: 'Informative', name: 'TechCrunch' },
@@ -70,14 +76,18 @@ function parseRss(xml, type, sourceName) {
   return items;
 }
 
-const FETCH_TIMEOUT_MS = 8000;
+const FETCH_TIMEOUT_MS = 14000;
+const BROWSER_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
 
 async function fetchFeed(feed) {
   const controller = new AbortController();
   const to = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
   try {
     const resp = await fetch(feed.url, {
-      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; PortfolioBlog/1.0 RSS)' },
+      headers: {
+        'User-Agent': BROWSER_UA,
+        'Accept': 'application/rss+xml, application/xml, text/xml, */*',
+      },
       signal: controller.signal,
     });
     clearTimeout(to);
@@ -96,8 +106,15 @@ export default async function handler(req, res) {
 
   const results = await Promise.allSettled(FEEDS.map((f) => fetchFeed(f)));
   const all = results.flatMap((r) => (r.status === 'fulfilled' && Array.isArray(r.value) ? r.value : []));
-  all.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
-  const list = all.slice(0, 24);
+  const seen = new Set();
+  const deduped = all.filter((a) => {
+    const key = (a.link || a.title || '').trim() || a.id;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+  deduped.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+  const list = deduped.slice(0, 24);
 
   res.status(200).json({ articles: list });
 }
