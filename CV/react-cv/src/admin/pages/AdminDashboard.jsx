@@ -7,16 +7,28 @@ function AdminDashboard() {
   const [importing, setImporting] = useState(false);
 
   useEffect(() => {
-    updateStats();
+    let cancelled = false;
+    async function load() {
+      try {
+        const [posts, projects, services] = await Promise.all([
+          AdminData.getBlogPosts(),
+          AdminData.getProjects(),
+          AdminData.getServices(),
+        ]);
+        if (!cancelled) {
+          setStats({
+            posts: Array.isArray(posts) ? posts.length : 0,
+            projects: Array.isArray(projects) ? projects.length : 0,
+            services: Array.isArray(services) ? services.length : 0,
+          });
+        }
+      } catch (_) {
+        if (!cancelled) setStats({ posts: 0, projects: 0, services: 0 });
+      }
+    }
+    load();
+    return () => { cancelled = true; };
   }, []);
-
-  const updateStats = () => {
-    setStats({
-      posts: AdminData.getBlogPosts().length,
-      projects: AdminData.getProjects().length,
-      services: AdminData.getServices().length
-    });
-  };
 
   const handleImport = async () => {
     setImporting(true);
@@ -29,10 +41,25 @@ function AdminDashboard() {
         fetch(dataDir + 'posts.json').then(r => r.ok ? r.json() : null).catch(() => null)
       ]);
       if (results[0]) AdminData.saveProfile(results[0]);
-      if (Array.isArray(results[1]) && results[1].length) AdminData.saveProjects(results[1]);
-      if (Array.isArray(results[2])) AdminData.saveServices(results[2]);
-      if (Array.isArray(results[3])) AdminData.saveBlogPosts(results[3]);
-      updateStats();
+      if (Array.isArray(results[1]) && results[1].length) {
+        for (const p of results[1]) await AdminData.saveProject(p);
+      }
+      if (Array.isArray(results[2])) {
+        for (const s of results[2]) await AdminData.saveService(s);
+      }
+      if (Array.isArray(results[3])) {
+        for (const p of results[3]) await AdminData.saveBlogPost(p);
+      }
+      const [posts, projects, services] = await Promise.all([
+        AdminData.getBlogPosts(),
+        AdminData.getProjects(),
+        AdminData.getServices(),
+      ]);
+      setStats({
+        posts: Array.isArray(posts) ? posts.length : 0,
+        projects: Array.isArray(projects) ? projects.length : 0,
+        services: Array.isArray(services) ? services.length : 0,
+      });
       alert('Site data imported! You can now edit profile, projects, services, and posts.');
     } catch (e) {
       alert('Failed to load data.');
@@ -41,13 +68,19 @@ function AdminDashboard() {
     }
   };
 
-  const handleExport = () => {
+  const handleExport = async () => {
     const profile = AdminData.getProfile() || {};
     const profileJson = JSON.stringify({ name: profile.name || '', title: profile.title || '', tagline: profile.tagline || '', photo: profile.photo || '/assets/images/profile.jpg', resumeUrl: profile.resumeUrl || '' }, null, 2);
-    const projects = AdminData.getProjects();
-    const services = AdminData.getServices();
-    const posts = AdminData.getBlogPosts();
-    
+    let projects = [];
+    let services = [];
+    let posts = [];
+    try {
+      [projects, services, posts] = await Promise.all([
+        AdminData.getProjects(),
+        AdminData.getServices(),
+        AdminData.getBlogPosts(),
+      ]);
+    } catch (_) {}
     const download = (filename, text) => {
       const a = document.createElement('a');
       a.href = 'data:application/json;charset=utf-8,' + encodeURIComponent(text);
@@ -55,9 +88,9 @@ function AdminDashboard() {
       a.click();
     };
     download('profile.json', profileJson);
-    download('projects.json', JSON.stringify(projects.length ? projects : [], null, 2));
-    download('services.json', JSON.stringify(services.length ? services : [], null, 2));
-    download('posts.json', JSON.stringify(posts.length ? posts : [], null, 2));
+    download('projects.json', JSON.stringify(Array.isArray(projects) && projects.length ? projects : [], null, 2));
+    download('services.json', JSON.stringify(Array.isArray(services) && services.length ? services : [], null, 2));
+    download('posts.json', JSON.stringify(Array.isArray(posts) && posts.length ? posts : [], null, 2));
     alert('4 files downloaded. Place them in your public/data/ folder to update the live site.');
   };
 

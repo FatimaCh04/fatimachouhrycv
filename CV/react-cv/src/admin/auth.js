@@ -22,7 +22,25 @@ export async function logout() {
   if (error) console.error('Logout error:', error.message);
 }
 
+const PROFILE_STORAGE_KEY = 'portfolio_admin_profile';
+
 export const AdminData = {
+  getProfile: () => {
+    try {
+      const raw = typeof window !== 'undefined' && window.localStorage.getItem(PROFILE_STORAGE_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (_) {
+      return null;
+    }
+  },
+  saveProfile: (data) => {
+    try {
+      if (typeof window !== 'undefined' && data) {
+        window.localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(data));
+      }
+    } catch (_) {}
+  },
+
   getBlogPosts: async () => {
     const { data, error } = await supabase.from('posts').select('*').order('created_at', { ascending: false });
     if (error) {
