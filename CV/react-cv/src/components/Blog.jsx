@@ -12,6 +12,7 @@ const BLOG_FILTERS = [
 const CLIENT_FEEDS = [
   { url: 'https://www.islamicity.org/feed/', type: 'Islamic', name: 'Islamicity' },
   { url: 'https://www.reddit.com/r/funny/.rss', type: 'Funny', name: 'Reddit r/funny' },
+  { url: 'https://www.theonion.com/feeds/daily/', type: 'Funny', name: 'The Onion' },
   { url: 'https://feeds.bbci.co.uk/news/rss.xml', type: 'Informative', name: 'BBC News' },
 ];
 
@@ -135,7 +136,7 @@ function Blog() {
       }
       try {
         const base = typeof window !== 'undefined' ? window.location.origin : '';
-        const res = await fetch(`${base}/api/fetch-news`, { signal: AbortSignal.timeout(5000) });
+        const res = await fetch(`${base}/api/fetch-news`, { signal: AbortSignal.timeout(12000) });
         if (res.ok) {
           const data = await res.json();
           if (data.articles && data.articles.length > 0) {

@@ -44,8 +44,27 @@ function Resume() {
     });
   }, []);
 
-  const handlePrint = () => {
-    window.print();
+  const [downloading, setDownloading] = useState(false);
+
+  const handleDownloadPdf = async () => {
+    const el = document.getElementById('resume-content');
+    if (!el) return;
+    setDownloading(true);
+    try {
+      const html2pdf = (await import('html2pdf.js')).default;
+      await html2pdf().set({
+        margin: 10,
+        filename: 'Fatima_Choudhry_Resume.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      }).from(el).save();
+    } catch (err) {
+      console.error(err);
+      window.print();
+    } finally {
+      setDownloading(false);
+    }
   };
 
   const skills = [
@@ -153,16 +172,21 @@ function Resume() {
             <span className="material-symbols-outlined text-primary">description</span>
             My Resume
           </h2>
-          <button type="button" onClick={handlePrint} id="resume-print-btn" className="inline-flex items-center gap-2 bg-primary text-slate-900 px-5 py-2.5 rounded-lg font-semibold hover:bg-teal-400 transition-colors">
+          <button type="button" onClick={handleDownloadPdf} disabled={downloading} id="resume-print-btn" className="inline-flex items-center gap-2 bg-primary text-slate-900 px-5 py-2.5 rounded-lg font-semibold hover:bg-teal-400 transition-colors disabled:opacity-70">
             <span className="material-symbols-outlined text-lg">download</span>
-            Download / Save as PDF
+            {downloading ? 'Saving PDF...' : 'Download PDF'}
           </button>
         </div>
 
         <div id="resume-content" className="print-resume rounded-xl bg-slate-800/50 border border-slate-700 shadow-lg overflow-hidden">
-          {/* Resume Header */}
-          <div className="p-8 md:p-10 border-b border-slate-700 flex flex-col md:flex-row md:items-start md:justify-between gap-6">
-            <div className="flex-1">
+          {/* Resume Header: photo left, name & contact on right */}
+          <div className="p-8 md:p-10 border-b border-slate-700 flex flex-col sm:flex-row sm:items-center gap-6">
+            <div className="shrink-0 flex justify-center sm:justify-start">
+              <div className="profile-photo-wrapper size-28 md:size-32 rounded-full border-2 border-primary p-1 shadow-glow overflow-hidden flex-shrink-0">
+                <img alt="Profile" className="profile-photo size-full rounded-full object-cover object-center" src="/assets/images/profile.jpg" onError={(e) => { e.target.onerror = null; e.target.src = '/assets/images/profile-placeholder.svg'; }}/>
+              </div>
+            </div>
+            <div className="flex-1 text-center sm:text-left min-w-0">
               <h1 className="resume-name text-3xl md:text-4xl font-extrabold text-white mb-2">Fatima Choudhry</h1>
               <p className="resume-title text-lg text-primary font-semibold mb-4">Software Engineering Student</p>
               <div className="space-y-1 text-slate-300 text-sm">
@@ -170,11 +194,6 @@ function Resume() {
                 <p><span className="text-slate-500">Email:</span> fatimachoudhry94@gmail.com</p>
                 <p><span className="text-slate-500">Address:</span> Vehari, Pakistan</p>
                 <p><span className="text-slate-500">Languages:</span> English, Urdu, Punjabi</p>
-              </div>
-            </div>
-            <div className="shrink-0">
-              <div className="profile-photo-wrapper size-28 md:size-32 rounded-full border-2 border-primary p-1 shadow-glow">
-                <img alt="Profile" className="profile-photo size-full rounded-full object-cover" src="/assets/images/profile.jpg" onError={(e) => { e.target.onerror = null; e.target.src = '/assets/images/profile-placeholder.svg'; }}/>
               </div>
             </div>
           </div>

@@ -135,7 +135,10 @@ function Portfolio() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2" id="portfolio-grid">
           {loading ? (
-            <PortfolioSkeleton />
+            <>
+              <p className="col-span-full text-slate-400 text-center text-sm">Loading projects...</p>
+              <PortfolioSkeleton />
+            </>
           ) : filteredProjects.length === 0 ? (
             <p className="text-slate-400 col-span-full">
               {projects.length === 0
@@ -147,13 +150,13 @@ function Portfolio() {
               const techList = parseTechnologies(p.technologies);
               return (
                 <article key={p.id || idx} className="portfolio-item flex flex-col rounded-xl border border-slate-700 overflow-hidden hover:border-primary/30 transition-colors group">
-                  {/* 1. Picture */}
+                  {/* 1. Picture - object-contain so mobile/screenshots fit properly */}
                   <div className="h-48 bg-slate-800 flex items-center justify-center overflow-hidden shrink-0">
                     {p.image && p.image.length > 0 ? (
                       <img
                         src={p.image}
                         alt={p.title}
-                        className="size-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        className="w-full h-full object-contain object-center group-hover:scale-105 transition-transform duration-300 bg-slate-800"
                         onError={(e) => {
                           e.target.onerror = null;
                           e.target.style.display = 'none';
