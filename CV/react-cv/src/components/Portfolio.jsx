@@ -150,13 +150,13 @@ function Portfolio() {
               const techList = parseTechnologies(p.technologies);
               return (
                 <article key={p.id || idx} className="portfolio-item flex flex-col rounded-xl border border-slate-700 overflow-hidden hover:border-primary/30 transition-colors group">
-                  {/* 1. Picture - object-contain so mobile/screenshots fit properly */}
+                  {/* 1. Picture - baki sab object-cover; sirf Mobile App Development object-contain */}
                   <div className="h-48 bg-slate-800 flex items-center justify-center overflow-hidden shrink-0">
                     {p.image && p.image.length > 0 ? (
                       <img
                         src={p.image}
                         alt={p.title}
-                        className="w-full h-full object-contain object-center group-hover:scale-105 transition-transform duration-300 bg-slate-800"
+                        className={categoryToSlug(p.category) === 'mobile-app-development' ? 'w-full h-full object-contain object-center group-hover:scale-105 transition-transform duration-300 bg-slate-800' : 'size-full object-cover group-hover:scale-105 transition-transform duration-300'}
                         onError={(e) => {
                           e.target.onerror = null;
                           e.target.style.display = 'none';

@@ -76,14 +76,28 @@ function parseRssInBrowser(xml, type, sourceName) {
   return items;
 }
 
+async function fetchWithProxy(url, timeout = 10000) {
+  const proxies = [
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+    `https://corsproxy.io/?${encodeURIComponent(url)}`,
+  ];
+  for (const proxyUrl of proxies) {
+    try {
+      const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(timeout) });
+      if (res.ok) return await res.text();
+    } catch (_) {
+      /* try next proxy */
+    }
+  }
+  return null;
+}
+
 async function fetchRssClient() {
   const results = await Promise.all(
     CLIENT_FEEDS.map(async (feed) => {
       try {
-        const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(feed.url)}`;
-        const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(6000) });
-        if (!res.ok) return [];
-        const xml = await res.text();
+        const xml = await fetchWithProxy(feed.url, 10000);
+        if (!xml) return [];
         return parseRssInBrowser(xml, feed.type, feed.name);
       } catch (_) {
         return [];

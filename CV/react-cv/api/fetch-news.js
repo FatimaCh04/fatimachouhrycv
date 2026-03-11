@@ -70,25 +70,32 @@ function parseRss(xml, type, sourceName) {
   return items;
 }
 
+const FETCH_TIMEOUT_MS = 8000;
+
+async function fetchFeed(feed) {
+  const controller = new AbortController();
+  const to = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+  try {
+    const resp = await fetch(feed.url, {
+      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; PortfolioBlog/1.0 RSS)' },
+      signal: controller.signal,
+    });
+    clearTimeout(to);
+    if (!resp.ok) return [];
+    const xml = await resp.text();
+    return parseRss(xml, feed.type, feed.name);
+  } catch (_) {
+    clearTimeout(to);
+    return [];
+  }
+}
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate');
 
-  const all = [];
-  for (const feed of FEEDS) {
-    try {
-      const resp = await fetch(feed.url, {
-        headers: { 'User-Agent': 'PortfolioBlog/1.0 (RSS Reader)' },
-      });
-      if (!resp.ok) continue;
-      const xml = await resp.text();
-      const items = parseRss(xml, feed.type, feed.name);
-      all.push(...items);
-    } catch (_) {
-      /* skip failed feed */
-    }
-  }
-  // sort by date desc, then take 20
+  const results = await Promise.allSettled(FEEDS.map((f) => fetchFeed(f)));
+  const all = results.flatMap((r) => (r.status === 'fulfilled' && Array.isArray(r.value) ? r.value : []));
   all.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
   const list = all.slice(0, 24);
 

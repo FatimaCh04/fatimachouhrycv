@@ -179,14 +179,9 @@ function Resume() {
         </div>
 
         <div id="resume-content" className="print-resume rounded-xl bg-slate-800/50 border border-slate-700 shadow-lg overflow-hidden">
-          {/* Resume Header: photo left, name & contact on right */}
+          {/* Resume Header: name & contact left, profile photo right */}
           <div className="p-8 md:p-10 border-b border-slate-700 flex flex-col sm:flex-row sm:items-center gap-6">
-            <div className="shrink-0 flex justify-center sm:justify-start">
-              <div className="profile-photo-wrapper size-28 md:size-32 rounded-full border-2 border-primary p-1 shadow-glow overflow-hidden flex-shrink-0">
-                <img alt="Profile" className="profile-photo size-full rounded-full object-cover object-center" src="/assets/images/profile.jpg" onError={(e) => { e.target.onerror = null; e.target.src = '/assets/images/profile-placeholder.svg'; }}/>
-              </div>
-            </div>
-            <div className="flex-1 text-center sm:text-left min-w-0">
+            <div className="flex-1 text-center sm:text-left min-w-0 order-2 sm:order-1">
               <h1 className="resume-name text-3xl md:text-4xl font-extrabold text-white mb-2">Fatima Choudhry</h1>
               <p className="resume-title text-lg text-primary font-semibold mb-4">Software Engineering Student</p>
               <div className="space-y-1 text-slate-300 text-sm">
@@ -194,6 +189,11 @@ function Resume() {
                 <p><span className="text-slate-500">Email:</span> fatimachoudhry94@gmail.com</p>
                 <p><span className="text-slate-500">Address:</span> Vehari, Pakistan</p>
                 <p><span className="text-slate-500">Languages:</span> English, Urdu, Punjabi</p>
+              </div>
+            </div>
+            <div className="shrink-0 flex justify-center sm:justify-end order-1 sm:order-2">
+              <div className="profile-photo-wrapper size-28 md:size-32 rounded-full border-2 border-primary p-1 shadow-glow overflow-hidden flex-shrink-0">
+                <img alt="Profile" className="profile-photo size-full rounded-full object-cover object-center" src="/assets/images/profile.jpg" onError={(e) => { e.target.onerror = null; e.target.src = '/assets/images/profile-placeholder.svg'; }}/>
               </div>
             </div>
           </div>
