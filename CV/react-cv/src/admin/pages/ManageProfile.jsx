@@ -10,13 +10,20 @@ function ManageProfile() {
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    const profile = AdminData.getProfile() || {};
-    setFormData({
-      name: profile.name || '',
-      title: profile.title || '',
-      tagline: profile.tagline || ''
-    });
-    setImageDataUrl(profile.photo || '');
+    let cancelled = false;
+    (async () => {
+      const fromSupabase = await AdminData.getProfileFromSupabase();
+      const profile = fromSupabase || AdminData.getProfile() || {};
+      if (!cancelled) {
+        setFormData({
+          name: profile.name || '',
+          title: profile.title || '',
+          tagline: profile.tagline || ''
+        });
+        setImageDataUrl(profile.photo || '');
+      }
+    })();
+    return () => { cancelled = true; };
   }, []);
 
   const handleImageChange = (e) => {
@@ -27,16 +34,23 @@ function ManageProfile() {
     reader.readAsDataURL(file);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    AdminData.saveProfile({
+    const payload = {
       name: formData.name.trim(),
       title: formData.title.trim(),
       tagline: formData.tagline.trim(),
       photo: imageDataUrl
-    });
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+    };
+    try {
+      await AdminData.saveProfileToSupabase(payload);
+      AdminData.saveProfile(payload);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch (err) {
+      console.error(err);
+      setSaved(false);
+    }
   };
 
   return (

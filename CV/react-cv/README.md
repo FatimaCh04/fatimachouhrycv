@@ -26,11 +26,25 @@ npm run dev
 
 See **VERCEL_DEPLOY.md** if you get 404. See **CONTACT_EMAIL_SETUP.md** for Gmail setup.
 
-## Supabase tables (Admin: Services & Contact links)
+## Supabase tables (Admin: Profile, Services, Contact links)
 
-The admin can manage **Services** and **Contact page links** in the dashboard. Ensure these tables exist in your Supabase project:
+The admin can manage **Profile** (name, title, tagline, photo), **Services**, and **Contact page links**. Ensure these tables exist in your Supabase project:
 
-- **services** – `id` (uuid, PK), `title`, `description`, `price`, `icon` (and any timestamps your project uses).
+- **profile** – single row for site profile (name, title, tagline, photo). Run in Supabase SQL Editor:
+
+```sql
+create table if not exists profile (
+  id integer primary key default 1,
+  name text,
+  title text,
+  tagline text,
+  photo text
+);
+insert into profile (id, name, title, tagline, photo) values (1, 'Fatima Choudhry', 'Software Engineering Student', 'Building scalable automation and custom software solutions.', null)
+on conflict (id) do nothing;
+```
+
+- **services** – `id` (uuid, PK), `title`, `description`, `price`, `icon`.
 - **contact_links** – run in Supabase SQL Editor:
 
 ```sql
@@ -43,8 +57,8 @@ create table if not exists contact_links (
 );
 ```
 
-Then in Admin go to **Contact links** to add Email, GitHub, LinkedIn, etc. The Contact page shows these; if the table is empty, it falls back to default links.
+When you change the **profile picture** (or name/title/tagline) in Admin → Profile, it is saved to Supabase and the **live site** (sidebar, Home, About, Resume) shows it. If the `profile` table is empty, the site uses default name and `public/assets/images/profile.jpg`.
 
-## Profile photo
+## Profile photo (fallback)
 
-Put your photo at `public/assets/images/profile.jpg`. If missing, the placeholder is shown.
+Put your default photo at `public/assets/images/profile.jpg`. If the Admin has not saved a profile in Supabase, this image is used.

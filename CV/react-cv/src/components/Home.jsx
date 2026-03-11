@@ -1,7 +1,9 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { usePublicProfile } from '../lib/usePublicProfile';
 
 function Home() {
+  const { profile } = usePublicProfile();
   useEffect(() => {
     const el = document.getElementById('tagline-typed');
     if (!el) return;
@@ -37,14 +39,14 @@ function Home() {
           <div className="mb-4">
             <div className="size-28 rounded-full border-2 border-primary p-1 shadow-glow mx-auto">
               <img
-                alt="Fatima Choudhry"
+                alt={profile.name}
                 className="profile-photo size-full rounded-full object-cover"
-                src="/assets/images/profile.jpg"
+                src={profile.photo}
                 onError={(e) => { e.target.onerror = null; e.target.src = '/assets/images/profile-placeholder.svg'; }}
               />
             </div>
           </div>
-          <h2 className="text-2xl md:text-3xl font-extrabold text-white mb-2 profile-name">Fatima Choudhry</h2>
+          <h2 className="text-2xl md:text-3xl font-extrabold text-white mb-2 profile-name">{profile.name}</h2>
           <p id="tagline-typed" className="text-base text-primary font-medium min-h-[1.25rem] mb-0 profile-tagline">|</p>
         </div>
       </section>
@@ -58,7 +60,7 @@ function Home() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="flex items-center gap-4 p-4 rounded-xl bg-slate-800 border border-slate-700">
             <div className="size-10 rounded-lg bg-violet-500/20 flex items-center justify-center text-violet-400 shrink-0"><span className="material-symbols-outlined">person</span></div>
-            <div><p className="text-xs text-slate-400 uppercase tracking-wider">Full Name</p><p className="font-semibold text-white profile-name">Fatima Choudhry</p></div>
+            <div><p className="text-xs text-slate-400 uppercase tracking-wider">Full Name</p><p className="font-semibold text-white profile-name">{profile.name}</p></div>
           </div>
           <div className="flex items-center gap-4 p-4 rounded-xl bg-slate-800 border border-slate-700">
             <div className="size-10 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400 shrink-0"><span className="material-symbols-outlined">calendar_today</span></div>
@@ -78,7 +80,7 @@ function Home() {
           </div>
           <div className="flex items-center gap-4 p-4 rounded-xl bg-slate-800 border border-slate-700">
             <div className="size-10 rounded-lg bg-amber-600/20 flex items-center justify-center text-amber-400 shrink-0"><span className="material-symbols-outlined">work</span></div>
-            <div><p className="text-xs text-slate-400 uppercase tracking-wider">Professional Title</p><p className="font-semibold text-white profile-title">Software Engineering Student</p></div>
+            <div><p className="text-xs text-slate-400 uppercase tracking-wider">Professional Title</p><p className="font-semibold text-white profile-title">{profile.title}</p></div>
           </div>
           <div className="flex items-center gap-4 p-4 rounded-xl bg-slate-800 border border-slate-700">
             <div className="size-10 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400 shrink-0"><span className="material-symbols-outlined">language</span></div>

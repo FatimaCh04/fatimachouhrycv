@@ -1,7 +1,9 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
+import { usePublicProfile } from '../lib/usePublicProfile';
 
 function Navbar({ onNavClick }) {
+  const { profile } = usePublicProfile();
   const getNavClass = ({ isActive }) => {
     const baseClass = "flex items-center gap-3 px-4 py-3 text-sm rounded-xl transition-all ";
     if (isActive) {
@@ -20,15 +22,15 @@ function Navbar({ onNavClick }) {
                 <img
                   alt="Profile"
                   className="profile-photo size-full rounded-full object-cover"
-                  src="/assets/images/profile.jpg"
+                  src={profile.photo}
                   onError={(e) => { e.target.onerror = null; e.target.src = '/assets/images/profile-placeholder.svg'; }}
                 />
               </div>
               <div className="absolute bottom-0 right-0 size-4 bg-emerald-500 border-2 border-sidebar rounded-full"></div>
             </div>
-            <h1 className="profile-name text-xl font-bold text-white">Fatima Choudhry</h1>
-            <p className="profile-title text-xs font-medium text-primary mt-1 px-3 py-1 bg-primary/20 rounded-full">Software Engineering Student</p>
-            <p className="profile-tagline text-sm text-slate-400 mt-3 leading-relaxed px-2">Building scalable automation and custom software solutions.</p>
+            <h1 className="profile-name text-xl font-bold text-white">{profile.name}</h1>
+            <p className="profile-title text-xs font-medium text-primary mt-1 px-3 py-1 bg-primary/20 rounded-full">{profile.title}</p>
+            <p className="profile-tagline text-sm text-slate-400 mt-3 leading-relaxed px-2">{profile.tagline}</p>
           </div>
           <nav className="space-y-1" onClick={onNavClick}>
             <NavLink to="/" className={({ isActive }) => getNavClass({ isActive: isActive && window.location.pathname === '/' })}>

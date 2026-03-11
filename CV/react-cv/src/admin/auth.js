@@ -41,6 +41,23 @@ export const AdminData = {
     } catch (_) {}
   },
 
+  getProfileFromSupabase: async () => {
+    const { data } = await supabase.from('profile').select('name, title, tagline, photo').limit(1).maybeSingle();
+    return data || null;
+  },
+
+  saveProfileToSupabase: async (data) => {
+    if (!data) return;
+    const row = {
+      id: 1,
+      name: (data.name || '').trim(),
+      title: (data.title || '').trim(),
+      tagline: (data.tagline || '').trim(),
+      photo: data.photo || null,
+    };
+    await supabase.from('profile').upsert(row, { onConflict: 'id' });
+  },
+
   getBlogPosts: async () => {
     const { data, error } = await supabase.from('posts').select('*').order('created_at', { ascending: false });
     if (error) {
