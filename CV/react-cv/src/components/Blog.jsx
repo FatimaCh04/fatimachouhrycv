@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { supabase } from '../lib/supabaseClient';
+import { useSupabaseQuery } from '../lib/useSupabaseQuery';
 
 const BLOG_FILTERS = [
   { slug: 'all', label: 'All' },
@@ -130,6 +130,8 @@ function setCachedBlogArticles(data, source = 'api') {
   } catch (_) {}
 }
 
+const SUPABASE_POSTS_SELECT = 'id, title, content, image, created_at';
+
 function Blog() {
   const cached = getCachedBlogArticles();
   const [articles, setArticles] = useState(cached?.data || []);
@@ -138,6 +140,23 @@ function Blog() {
   const [expanded, setExpanded] = useState({});
   const [source, setSource] = useState(cached?.source || 'api');
   const [filter, setFilter] = useState('all');
+
+  const { data: supabasePosts = [] } = useSupabaseQuery('posts', {
+    select: SUPABASE_POSTS_SELECT,
+    orderBy: 'created_at',
+    orderAsc: false,
+    limit: 50,
+    cacheKey: 'supabase_posts',
+    cacheTTL: 5 * 60 * 1000,
+  });
+
+  useEffect(() => {
+    if (source === 'supabase' && articles.length === 0 && supabasePosts.length > 0) {
+      setArticles(supabasePosts);
+      setCachedBlogArticles(supabasePosts, 'supabase');
+      setError(false);
+    }
+  }, [source, articles.length, supabasePosts]);
 
   useEffect(() => {
     async function load() {
@@ -176,16 +195,11 @@ function Blog() {
       } catch (_) {
         /* client fetch failed */
       }
-      supabase.from('posts').select('*').order('created_at', { ascending: false }).then(({ data, err }) => {
-        if (err) setError(true);
-        else {
-          const list = data || [];
-          setArticles(list);
-          setSource('supabase');
-          if (list.length > 0) setCachedBlogArticles(list, 'supabase');
-        }
-        setLoading(false);
-      });
+      setArticles(supabasePosts || []);
+      setSource('supabase');
+      if ((supabasePosts || []).length > 0) setCachedBlogArticles(supabasePosts, 'supabase');
+      setError((supabasePosts || []).length === 0);
+      setLoading(false);
     }
     load();
   }, []);

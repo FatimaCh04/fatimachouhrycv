@@ -1,50 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabaseClient';
+import React, { useState } from 'react';
 import { usePublicProfile } from '../lib/usePublicProfile';
+import { useSupabaseQuery } from '../lib/useSupabaseQuery';
 
-const RESUME_PROJECTS_CACHE_KEY = 'portfolio_projects';
-const RESUME_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes (same as Portfolio)
-
-function getCachedResumeProjects() {
-  try {
-    const raw = sessionStorage.getItem(RESUME_PROJECTS_CACHE_KEY);
-    if (!raw) return null;
-    const { data, at } = JSON.parse(raw);
-    if (!Array.isArray(data) || Date.now() - at > RESUME_CACHE_TTL_MS) return null;
-    return data;
-  } catch (_) {
-    return null;
-  }
-}
-
-function setCachedResumeProjects(data) {
-  try {
-    sessionStorage.setItem(RESUME_PROJECTS_CACHE_KEY, JSON.stringify({ data, at: Date.now() }));
-  } catch (_) {}
-}
+const RESUME_PROJECTS_SELECT = 'id, title, description, category, technologies, image, live_link, github_link, created_at';
 
 function Resume() {
   const { profile } = usePublicProfile();
-  const cachedProjects = getCachedResumeProjects();
-  const [projects, setProjects] = useState(cachedProjects || []);
-
-  useEffect(() => {
-    if (cachedProjects) {
-      supabase.from('projects').select('*').order('created_at', { ascending: false }).then(({ data }) => {
-        if (data) {
-          setProjects(data);
-          setCachedResumeProjects(data);
-        }
-      });
-      return;
-    }
-    supabase.from('projects').select('*').order('created_at', { ascending: false }).then(({ data }) => {
-      if (data) {
-        setProjects(data);
-        setCachedResumeProjects(data);
-      }
-    });
-  }, []);
+  const { data: projects = [] } = useSupabaseQuery('projects', {
+    select: RESUME_PROJECTS_SELECT,
+    orderBy: 'created_at',
+    orderAsc: false,
+    limit: 50,
+    cacheKey: 'portfolio_projects',
+    cacheTTL: 5 * 60 * 1000,
+  });
 
   const [downloading, setDownloading] = useState(false);
 

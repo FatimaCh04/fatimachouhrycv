@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { supabase } from '../lib/supabaseClient';
+import { useSupabaseQuery } from '../lib/useSupabaseQuery';
 
 const CATEGORIES = [
   { slug: 'all', label: 'All' },
@@ -52,54 +52,19 @@ function PortfolioSkeleton() {
   );
 }
 
-const PORTFOLIO_CACHE_KEY = 'portfolio_projects';
-const PORTFOLIO_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
-
-function getCachedProjects() {
-  try {
-    const raw = sessionStorage.getItem(PORTFOLIO_CACHE_KEY);
-    if (!raw) return null;
-    const { data, at } = JSON.parse(raw);
-    if (!Array.isArray(data) || Date.now() - at > PORTFOLIO_CACHE_TTL_MS) return null;
-    return data;
-  } catch (_) {
-    return null;
-  }
-}
-
-function setCachedProjects(data) {
-  try {
-    sessionStorage.setItem(PORTFOLIO_CACHE_KEY, JSON.stringify({ data, at: Date.now() }));
-  } catch (_) {}
-}
+const PROJECTS_SELECT = 'id, title, description, category, technologies, image, live_link, github_link, created_at';
 
 function Portfolio() {
   const navigate = useNavigate();
-  const cached = getCachedProjects();
   const [filter, setFilter] = useState('all');
-  const [projects, setProjects] = useState(cached || []);
-  const [loading, setLoading] = useState(!cached);
-
-  useEffect(() => {
-    if (cached) {
-      supabase.from('projects').select('*').order('created_at', { ascending: false }).then(({ data }) => {
-        if (data) {
-          setProjects(data);
-          setCachedProjects(data);
-        }
-        setLoading(false);
-      });
-      return;
-    }
-    setLoading(true);
-    supabase.from('projects').select('*').order('created_at', { ascending: false }).then(({ data }) => {
-      if (data) {
-        setProjects(data);
-        setCachedProjects(data);
-      }
-      setLoading(false);
-    });
-  }, []);
+  const { data: projects = [], loading } = useSupabaseQuery('projects', {
+    select: PROJECTS_SELECT,
+    orderBy: 'created_at',
+    orderAsc: false,
+    limit: 50,
+    cacheKey: 'portfolio_projects',
+    cacheTTL: 5 * 60 * 1000,
+  });
 
   const categoryToSlug = (s) => (s || '').toLowerCase().trim().replace(/\s+/g, '-');
   const filteredProjects =

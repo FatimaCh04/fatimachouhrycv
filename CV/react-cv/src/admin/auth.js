@@ -59,7 +59,7 @@ export const AdminData = {
   },
 
   getBlogPosts: async () => {
-    const { data, error } = await supabase.from('posts').select('*').order('created_at', { ascending: false });
+    const { data, error } = await supabase.from('posts').select('*').order('created_at', { ascending: false }).limit(100);
     if (error) {
       console.error('Error fetching posts:', error);
       return [];
@@ -77,7 +77,7 @@ export const AdminData = {
   },
 
   getProjects: async () => {
-    const { data, error } = await supabase.from('projects').select('*').order('created_at', { ascending: false });
+    const { data, error } = await supabase.from('projects').select('*').order('created_at', { ascending: false }).limit(100);
     if (error) {
       console.error('Error fetching projects:', error);
       return [];
@@ -95,7 +95,7 @@ export const AdminData = {
   },
 
   getServices: async () => {
-    const { data, error } = await supabase.from('services').select('*');
+    const { data, error } = await supabase.from('services').select('*').order('id', { ascending: true }).limit(50);
     if (error) {
       console.error('Error fetching services:', error);
       return [];

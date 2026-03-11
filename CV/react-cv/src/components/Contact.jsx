@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabaseClient';
+import React, { useState } from 'react';
+import { useSupabaseQuery } from '../lib/useSupabaseQuery';
 
 const DEFAULT_LINKS = [
   { id: '1', label: 'Email', url: 'mailto:fatimachoudhry94@gmail.com', icon: 'mail' },
@@ -30,13 +30,15 @@ function ContactLinkIcon({ link }) {
 
 function Contact() {
   const [formStatus, setFormStatus] = useState({ type: '', message: '' });
-  const [contactLinks, setContactLinks] = useState(DEFAULT_LINKS);
-
-  useEffect(() => {
-    supabase.from('contact_links').select('*').order('sort_order', { ascending: true }).then(({ data }) => {
-      if (data && data.length > 0) setContactLinks(data);
-    }).catch(() => {});
-  }, []);
+  const { data: fetchedLinks = [] } = useSupabaseQuery('contact_links', {
+    select: 'id, label, url, icon, sort_order',
+    orderBy: 'sort_order',
+    orderAsc: true,
+    limit: 20,
+    cacheKey: 'supabase_contact_links',
+    cacheTTL: 5 * 60 * 1000,
+  });
+  const contactLinks = fetchedLinks.length > 0 ? fetchedLinks : DEFAULT_LINKS;
 
   const handleSubmit = (e) => {
     e.preventDefault();

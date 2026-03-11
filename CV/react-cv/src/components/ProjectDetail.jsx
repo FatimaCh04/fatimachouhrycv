@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { supabase } from '../lib/supabaseClient';
+import { useSupabaseQuery } from '../lib/useSupabaseQuery';
 
 const CATEGORIES = [
   { slug: 'react-development', label: 'React Development' },
@@ -29,26 +29,18 @@ function GithubIcon({ className = 'size-5' }) {
   );
 }
 
+const PROJECT_DETAIL_SELECT = 'id, title, description, category, technologies, image, live_link, github_link, created_at';
+
 function ProjectDetail() {
   const { id } = useParams();
-  const [project, setProject] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (!id) {
-      setLoading(false);
-      return;
-    }
-    supabase
-      .from('projects')
-      .select('*')
-      .eq('id', id)
-      .single()
-      .then(({ data, error }) => {
-        setLoading(false);
-        if (!error && data) setProject(data);
-      });
-  }, [id]);
+  const { data: project, loading } = useSupabaseQuery('projects', {
+    select: PROJECT_DETAIL_SELECT,
+    single: true,
+    filter: id ? { column: 'id', value: Number(id) || id } : undefined,
+    enabled: !!id,
+    cacheKey: id ? `project_${id}` : undefined,
+    cacheTTL: 5 * 60 * 1000,
+  });
 
   if (loading) {
     return (

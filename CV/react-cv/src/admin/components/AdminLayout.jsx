@@ -28,10 +28,10 @@ function AdminLayout() {
     const load = async () => {
       try {
         const [p1, p2, p3, p4] = await Promise.all([
-          supabase.from('projects').select('*').order('created_at', { ascending: false }),
-          supabase.from('posts').select('*').order('created_at', { ascending: false }),
-          supabase.from('services').select('*'),
-          supabase.from('contact_links').select('*').order('sort_order', { ascending: true }),
+          supabase.from('projects').select('*').order('created_at', { ascending: false }).limit(100),
+          supabase.from('posts').select('*').order('created_at', { ascending: false }).limit(100),
+          supabase.from('services').select('*').order('id', { ascending: true }).limit(50),
+          supabase.from('contact_links').select('*').order('sort_order', { ascending: true }).limit(50),
         ]);
         if (p1.data) adminCache.setProjects(p1.data);
         if (p2.data) adminCache.setPosts(p2.data);
