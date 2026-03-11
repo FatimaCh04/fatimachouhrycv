@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabaseClient';
+import { adminCache } from '../adminCache';
 
 function ManageServices() {
-  const [services, setServices] = useState([]);
+  const [services, setServices] = useState(() => adminCache.getServices() || []);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   
@@ -17,7 +18,10 @@ function ManageServices() {
 
   const loadServices = async () => {
     const { data } = await supabase.from('services').select('*');
-    if (data) setServices(data);
+    if (data) {
+      setServices(data);
+      adminCache.setServices(data);
+    }
   };
 
   const openModal = (item = null) => {

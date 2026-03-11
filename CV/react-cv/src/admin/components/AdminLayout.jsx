@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, Outlet, Navigate, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabaseClient';
+import { adminCache } from '../adminCache';
 
 function AdminLayout() {
   const navigate = useNavigate();
@@ -20,6 +21,26 @@ function AdminLayout() {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // Prefetch admin data in background so Manage pages load instantly
+  useEffect(() => {
+    if (!session) return;
+    const load = async () => {
+      try {
+        const [p1, p2, p3, p4] = await Promise.all([
+          supabase.from('projects').select('*').order('created_at', { ascending: false }),
+          supabase.from('posts').select('*').order('created_at', { ascending: false }),
+          supabase.from('services').select('*'),
+          supabase.from('contact_links').select('*').order('sort_order', { ascending: true }),
+        ]);
+        if (p1.data) adminCache.setProjects(p1.data);
+        if (p2.data) adminCache.setPosts(p2.data);
+        if (p3.data) adminCache.setServices(p3.data);
+        if (p4.data) adminCache.setContactLinks(p4.data);
+      } catch (_) {}
+    };
+    load();
+  }, [session]);
 
   useEffect(() => {
     if (adminMenuOpen) document.body.classList.add('admin-menu-open');

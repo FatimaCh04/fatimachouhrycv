@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { AdminData } from '../auth';
+import { adminCache } from '../adminCache';
 
 function AdminDashboard() {
   const [stats, setStats] = useState({ posts: 0, projects: 0, services: 0 });
@@ -21,6 +22,9 @@ function AdminDashboard() {
             projects: Array.isArray(projects) ? projects.length : 0,
             services: Array.isArray(services) ? services.length : 0,
           });
+          if (Array.isArray(posts)) adminCache.setPosts(posts);
+          if (Array.isArray(projects)) adminCache.setProjects(projects);
+          if (Array.isArray(services)) adminCache.setServices(services);
         }
       } catch (_) {
         if (!cancelled) setStats({ posts: 0, projects: 0, services: 0 });

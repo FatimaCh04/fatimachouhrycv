@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../../lib/supabaseClient';
+import { adminCache } from '../adminCache';
 
 function ManageProjects() {
-  const [projects, setProjects] = useState([]);
+  const [projects, setProjects] = useState(() => adminCache.getProjects() || []);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   
@@ -29,7 +30,10 @@ function ManageProjects() {
 
   const loadProjects = async () => {
     const { data } = await supabase.from('projects').select('*').order('created_at', { ascending: false });
-    if (data) setProjects(data);
+    if (data) {
+      setProjects(data);
+      adminCache.setProjects(data);
+    }
   };
 
   const openModal = (item = null) => {

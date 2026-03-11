@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabaseClient';
+import { adminCache } from '../adminCache';
 
 const DEFAULT_ICONS = ['mail', 'github', 'linkedin', 'link', 'code', 'terminal', 'smartphone', 'language', 'public'];
 
 function ManageContactLinks() {
-  const [links, setLinks] = useState([]);
+  const [links, setLinks] = useState(() => adminCache.getContactLinks() || []);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [formData, setFormData] = useState({ label: '', url: '', icon: 'link' });
@@ -16,7 +17,10 @@ function ManageContactLinks() {
 
   const loadLinks = async () => {
     const { data } = await supabase.from('contact_links').select('*').order('sort_order', { ascending: true });
-    if (data) setLinks(data);
+    if (data) {
+      setLinks(data);
+      adminCache.setContactLinks(data);
+    }
   };
 
   const openModal = (item = null) => {
