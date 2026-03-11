@@ -17,7 +17,15 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Content-Type', 'application/json');
 
-  const { name, email, message } = req.body || {};
+  let body = req.body;
+  if (typeof body === 'string') {
+    try {
+      body = body ? JSON.parse(body) : {};
+    } catch (_) {
+      return res.status(400).json({ ok: false, error: 'Invalid JSON body.' });
+    }
+  }
+  const { name, email, message } = body || {};
   const n = (name || '').trim();
   const e = (email || '').trim();
   const m = (message || '').trim();
