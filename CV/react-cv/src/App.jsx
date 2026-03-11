@@ -1,3 +1,4 @@
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Home from './components/Home';
@@ -18,17 +19,24 @@ import ManageProfile from './admin/pages/ManageProfile';
 import ManagePosts from './admin/pages/ManagePosts';
 import ManageProjects from './admin/pages/ManageProjects';
 import ManageServices from './admin/pages/ManageServices';
+import ManageContactLinks from './admin/pages/ManageContactLinks';
 
 function FrontLayout() {
+  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+  React.useEffect(() => {
+    if (mobileMenuOpen) document.body.classList.add('mobile-menu-open');
+    else document.body.classList.remove('mobile-menu-open');
+    return () => document.body.classList.remove('mobile-menu-open');
+  }, [mobileMenuOpen]);
   return (
     <>
-      <div id="mobile-overlay" aria-hidden="true"></div>
-      <button type="button" id="mobile-menu-btn" className="hidden" aria-label="Open menu">
-        <span className="material-symbols-outlined text-2xl">menu</span>
+      <div id="mobile-overlay" aria-hidden="true" onClick={() => setMobileMenuOpen(false)}></div>
+      <button type="button" id="mobile-menu-btn" className="hidden" aria-label="Open menu" onClick={() => setMobileMenuOpen((v) => !v)}>
+        <span className="material-symbols-outlined text-2xl">{mobileMenuOpen ? 'close' : 'menu'}</span>
       </button>
       <div className="flex min-h-screen">
-        <Navbar />
-        <main id="site-main" className="flex-1 ml-72 p-8">
+        <Navbar onNavClick={() => setMobileMenuOpen(false)} />
+        <main id="site-main" className="flex-1 ml-0 md:ml-72 p-4 sm:p-6 md:p-8">
           <Outlet />
           <Footer />
         </main>
@@ -56,6 +64,8 @@ function App() {
           <Route path="manage-projects.html" element={<ManageProjects />} />
           <Route path="manage-services" element={<ManageServices />} />
           <Route path="manage-services.html" element={<ManageServices />} />
+          <Route path="manage-contact-links" element={<ManageContactLinks />} />
+          <Route path="manage-contact-links.html" element={<ManageContactLinks />} />
         </Route>
 
         {/* Public Routes */}

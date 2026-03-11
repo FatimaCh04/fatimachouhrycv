@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink, Link } from 'react-router-dom';
 
-function Navbar() {
+function Navbar({ onNavClick }) {
   const getNavClass = ({ isActive }) => {
     const baseClass = "flex items-center gap-3 px-4 py-3 text-sm rounded-xl transition-all ";
     if (isActive) {
@@ -30,7 +30,7 @@ function Navbar() {
             <p className="profile-title text-xs font-medium text-primary mt-1 px-3 py-1 bg-primary/20 rounded-full">Software Engineering Student</p>
             <p className="profile-tagline text-sm text-slate-400 mt-3 leading-relaxed px-2">Building scalable automation and custom software solutions.</p>
           </div>
-          <nav className="space-y-1">
+          <nav className="space-y-1" onClick={onNavClick}>
             <NavLink to="/" className={({ isActive }) => getNavClass({ isActive: isActive && window.location.pathname === '/' })}>
               <span className="material-symbols-outlined">home</span>Home
             </NavLink>

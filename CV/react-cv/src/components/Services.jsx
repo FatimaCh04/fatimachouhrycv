@@ -21,17 +21,17 @@ function Services() {
   }, []);
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8">
+    <div className="max-w-5xl mx-auto space-y-6 sm:space-y-8">
       <div className="text-center">
-        <h2 className="text-3xl font-extrabold text-white flex items-center justify-center gap-2">
+        <h2 className="text-2xl sm:text-3xl font-extrabold text-white flex items-center justify-center gap-2">
           <span className="material-symbols-outlined text-primary">work</span>
           Service
         </h2>
-        <p className="text-lg text-slate-400 mb-8">What I can help you build — from automation and APIs to custom software.</p>
+        <p className="text-base sm:text-lg text-slate-400 mb-6 sm:mb-8">What I can help you build — from automation and APIs to custom software.</p>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6" id="services-grid">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6" id="services-grid">
         {services.map((s, idx) => (
-          <div key={s.id ?? idx} className="p-6 rounded-xl border border-slate-700 bg-slate-800/30 hover:bg-slate-700/50 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all duration-200 cursor-pointer text-left">
+          <div key={s.id ?? idx} className="p-4 sm:p-6 rounded-xl border border-slate-700 bg-slate-800/30 hover:bg-slate-700/50 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all duration-200 cursor-pointer text-left min-h-[120px] flex flex-col justify-center">
             <div className="size-12 rounded-lg bg-primary/20 flex items-center justify-center text-primary mb-4">
               <span className="material-symbols-outlined text-2xl">{s.icon || 'code'}</span>
             </div>
@@ -41,12 +41,12 @@ function Services() {
           </div>
         ))}
       </div>
-      <section className="bg-primary/20 border border-primary rounded-xl p-8 flex flex-col md:flex-row items-center justify-between text-white shadow-glow">
+      <section className="bg-primary/20 border border-primary rounded-xl p-5 sm:p-8 flex flex-col md:flex-row items-center justify-between text-white shadow-glow gap-4">
         <div className="text-left">
-          <h4 className="text-2xl font-bold mb-2">Need a project built?</h4>
-          <p className="text-slate-300">I'm open to automation and custom software projects.</p>
+          <h4 className="text-xl sm:text-2xl font-bold mb-2">Need a project built?</h4>
+          <p className="text-slate-300 text-sm sm:text-base">I'm open to automation and custom software projects.</p>
         </div>
-        <Link className="mt-6 md:mt-0 px-8 py-3 bg-primary text-slate-900 rounded-lg font-bold hover:bg-teal-400 transition-colors flex items-center gap-2" to="/contact">
+        <Link className="mt-2 md:mt-0 px-6 sm:px-8 py-3 bg-primary text-slate-900 rounded-lg font-bold hover:bg-teal-400 transition-colors flex items-center justify-center gap-2 min-h-[48px] touch-manipulation w-full md:w-auto" to="/contact">
           <span className="material-symbols-outlined">send</span>
           Get in Touch
         </Link>
