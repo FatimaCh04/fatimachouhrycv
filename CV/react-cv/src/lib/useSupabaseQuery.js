@@ -87,7 +87,12 @@ export function useSupabaseQuery(table, options = {}) {
 
       const value = single ? result : (Array.isArray(result) ? result : []);
       setData(value);
-      if (cacheKey) setInStorage(cacheKey, value);
+      if (cacheKey) {
+        setInStorage(cacheKey, value);
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('supabase_query_update', { detail: { cacheKey, value } }));
+        }
+      }
     } catch (err) {
       setError(err);
       if (cached === null) setData(emptyValue);
@@ -96,6 +101,34 @@ export function useSupabaseQuery(table, options = {}) {
       setLoading(false);
     }
   }, [table, select, orderBy, orderAsc, limit, single, enabled, cacheKey, filter?.column, filter?.value]);
+
+  useEffect(() => {
+    if (!cacheKey || typeof window === 'undefined') return;
+    const handleUpdate = (e) => {
+      if (e.detail && e.detail.cacheKey === cacheKey) {
+        setData(e.detail.value);
+      }
+    };
+    const handleStorageEvent = (e) => {
+      if (e.key === cacheKey) {
+        if (!e.newValue) {
+          // Cache was cleared from another tab (like Admin panel). Refetch!
+          fetchData();
+        } else {
+          try {
+            const parsed = JSON.parse(e.newValue);
+            setData(parsed.data);
+          } catch (_) {}
+        }
+      }
+    };
+    window.addEventListener('supabase_query_update', handleUpdate);
+    window.addEventListener('storage', handleStorageEvent);
+    return () => {
+      window.removeEventListener('supabase_query_update', handleUpdate);
+      window.removeEventListener('storage', handleStorageEvent);
+    };
+  }, [cacheKey, fetchData]);
 
   useEffect(() => {
     if (!enabled) {
