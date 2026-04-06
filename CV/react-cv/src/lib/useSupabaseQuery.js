@@ -29,6 +29,8 @@ function setInStorage(cacheKey, data) {
  * @param {Object} options - { select, orderBy, orderAsc, limit, single, filter: { column, value }, enabled, cacheKey, cacheTTL }
  * @returns {{ data: Array|object|null, loading: boolean, error: Error|null, refetch: function }}
  */
+const activePromises = new Map();
+
 export function useSupabaseQuery(table, options = {}) {
   const {
     select = '*',
@@ -39,7 +41,7 @@ export function useSupabaseQuery(table, options = {}) {
     filter,
     enabled = true,
     cacheKey,
-    cacheTTL = DEFAULT_TTL_MS,
+    cacheTTL = 5 * 60 * 1000,
   } = options;
 
   const emptyValue = single ? null : [];
@@ -56,7 +58,17 @@ export function useSupabaseQuery(table, options = {}) {
       return;
     }
     setError(null);
+
+    const promiseKey = cacheKey || `${table}_${select}_${limit}`;
+
     try {
+      if (activePromises.has(promiseKey)) {
+        const result = await activePromises.get(promiseKey);
+        const value = single ? result : (Array.isArray(result) ? result : []);
+        setData(value);
+        return;
+      }
+
       let query = supabase.from(table).select(select);
       if (filter && filter.column != null && filter.value !== undefined && filter.value !== null) {
         query = query.eq(filter.column, filter.value);
@@ -65,8 +77,13 @@ export function useSupabaseQuery(table, options = {}) {
       if (limit && !single) query = query.limit(limit);
       if (single) query = filter ? query.maybeSingle() : query.limit(1).maybeSingle();
 
-      const { data: result, error: err } = await query;
-      if (err) throw err;
+      const fetchPromise = query.then(({ data: result, error: err }) => {
+        if (err) throw err;
+        return result;
+      });
+
+      activePromises.set(promiseKey, fetchPromise);
+      const result = await fetchPromise;
 
       const value = single ? result : (Array.isArray(result) ? result : []);
       setData(value);
@@ -75,6 +92,7 @@ export function useSupabaseQuery(table, options = {}) {
       setError(err);
       if (cached === null) setData(emptyValue);
     } finally {
+      activePromises.delete(promiseKey);
       setLoading(false);
     }
   }, [table, select, orderBy, orderAsc, limit, single, enabled, cacheKey, filter?.column, filter?.value]);
