@@ -30,7 +30,28 @@ function ManageProfile() {
     const file = e.target.files && e.target.files[0];
     if (!file || !file.type.match(/^image\//)) return;
     const reader = new FileReader();
-    reader.onload = (ev) => setImageDataUrl(ev.target.result || '');
+    reader.onload = (ev) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+        const maxSize = 800;
+        if (width > height && width > maxSize) {
+          height = Math.round((height * maxSize) / width);
+          width = maxSize;
+        } else if (height > maxSize) {
+          width = Math.round((width * maxSize) / height);
+          height = maxSize;
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        setImageDataUrl(canvas.toDataURL('image/webp', 0.8));
+      };
+      img.src = ev.target.result;
+    };
     reader.readAsDataURL(file);
   };
 
@@ -45,6 +66,7 @@ function ManageProfile() {
     try {
       await AdminData.saveProfileToSupabase(payload);
       AdminData.saveProfile(payload);
+      localStorage.removeItem('supabase_profile');
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } catch (err) {

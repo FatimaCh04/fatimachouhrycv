@@ -66,7 +66,28 @@ function ManageProjects() {
     const file = e.target.files && e.target.files[0];
     if (!file || !file.type.match(/^image\//)) return;
     const reader = new FileReader();
-    reader.onload = (ev) => setImageDataUrl(ev.target.result || '');
+    reader.onload = (ev) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+        const maxSize = 1200;
+        if (width > height && width > maxSize) {
+          height = Math.round((height * maxSize) / width);
+          width = maxSize;
+        } else if (height > maxSize) {
+          width = Math.round((width * maxSize) / height);
+          height = maxSize;
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        setImageDataUrl(canvas.toDataURL('image/webp', 0.8));
+      };
+      img.src = ev.target.result;
+    };
     reader.readAsDataURL(file);
   };
 
@@ -92,6 +113,7 @@ function ManageProjects() {
     }
 
     await loadProjects();
+    localStorage.removeItem('portfolio_projects');
     setLoading(false);
     closeModal();
   };
@@ -100,6 +122,7 @@ function ManageProjects() {
     if (window.confirm('Delete this project?')) {
       await supabase.from('projects').delete().eq('id', id);
       await loadProjects();
+      localStorage.removeItem('portfolio_projects');
     }
   };
 
