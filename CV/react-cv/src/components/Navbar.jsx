@@ -30,7 +30,7 @@ function Navbar({ onNavClick }) {
             </div>
             <h1 className="profile-name text-xl font-bold text-white">{profile.name}</h1>
             <p className="profile-title text-xs font-medium text-primary mt-1 px-3 py-1 bg-primary/20 rounded-full">{profile.title}</p>
-            <p className="profile-tagline text-sm text-slate-400 mt-3 leading-relaxed px-2">{profile.tagline}</p>
+
           </div>
           <nav className="space-y-1" onClick={onNavClick}>
             <NavLink to="/" className={({ isActive }) => getNavClass({ isActive: isActive && window.location.pathname === '/' })}>

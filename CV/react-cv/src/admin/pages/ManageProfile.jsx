@@ -36,7 +36,7 @@ function ManageProfile() {
         const canvas = document.createElement('canvas');
         let width = img.width;
         let height = img.height;
-        const maxSize = 800;
+        const maxSize = 400;
         if (width > height && width > maxSize) {
           height = Math.round((height * maxSize) / width);
           width = maxSize;
@@ -48,7 +48,7 @@ function ManageProfile() {
         canvas.height = height;
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, width, height);
-        setImageDataUrl(canvas.toDataURL('image/webp', 0.8));
+        setImageDataUrl(canvas.toDataURL('image/webp', 0.7));
       };
       img.src = ev.target.result;
     };
@@ -67,10 +67,17 @@ function ManageProfile() {
       await AdminData.saveProfileToSupabase(payload);
       AdminData.saveProfile(payload);
       localStorage.removeItem('supabase_profile');
+      
+      // Dispatch custom event to notify all components in the current tab to refresh
+      window.dispatchEvent(new CustomEvent('supabase_query_update', { 
+        detail: { cacheKey: 'supabase_profile', value: payload } 
+      }));
+
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } catch (err) {
       console.error(err);
+      alert('Error saving profile: ' + (err.message || 'Unknown error'));
       setSaved(false);
     }
   };
@@ -110,7 +117,7 @@ function ManageProfile() {
 
         <div>
           <label className="block text-sm font-medium text-slate-300 mb-1">Professional Title</label>
-          <input type="text" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 text-white focus:border-primary outline-none" placeholder="e.g. Software Engineering Student" />
+          <input type="text" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 text-white focus:border-primary outline-none" placeholder="e.g. Software Engineer | Full Stack & Cross-Platform Developer" />
         </div>
 
         <div>

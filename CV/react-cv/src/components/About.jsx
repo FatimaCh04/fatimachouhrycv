@@ -23,7 +23,7 @@ function About() {
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-lg text-slate-300 leading-relaxed mb-4">
-              I'm a Software Engineering student with a focus on building scalable solutions. I turn complex problems into simple, elegant systems through clean code and modern tools.
+              I'm a Software Engineer with a focus on Full Stack and Cross-Platform development. I turn complex problems into simple, elegant systems through clean code and modern tools.
             </p>
             <p className="text-slate-400 leading-relaxed">
               My work spans custom software, process automation, and robust backend design. I build tools that save time and scale with your business.
@@ -58,29 +58,65 @@ function About() {
         </ul>
       </section>
 
-      {/* Skills & Expertise */}
-      <section className="rounded-xl bg-slate-800/50 border border-slate-700 p-8 shadow-sm">
-        <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
-          <span className="material-symbols-outlined text-primary">psychology</span>
-          Skills & Expertise
-        </h3>
-        <div className="space-y-4">
+      {/* Skills & Expertise Redesign */}
+      <section className="space-y-6">
+        <div className="flex items-center gap-3 mb-2">
+          <div className="size-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary">
+            <span className="material-symbols-outlined font-bold">psychology</span>
+          </div>
+          <h3 className="text-2xl font-bold text-white tracking-tight">Skills & Expertise</h3>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {[
-            { name: 'AI-Assisted UI/UX Design (Web & Apps)', width: '92%' },
-            { name: 'AI-Enhanced Web Development', width: '88%' },
-            { name: 'Backend Development & REST APIs', width: '85%' },
-            { name: 'Database Management (MySQL, MongoDB)', width: '82%' },
-            { name: 'Git & GitHub Version Control', width: '90%' },
-            { name: 'Web Deployment (Vercel)', width: '78%' },
-            { name: 'Branding & Digital Presence', width: '80%' },
-          ].map(({ name, width }) => (
-            <div key={name}>
-              <span className="text-sm text-slate-300 block mb-1">{name}</span>
-              <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-primary rounded-full transition-all duration-500"
-                  style={{ width }}
-                />
+            {
+              title: 'Frontend Engineering',
+              icon: 'code',
+              color: 'text-blue-400',
+              bg: 'bg-blue-400/10',
+              skills: ['React.js & Modern JavaScript (ES6+)', 'HTML5, CSS3 & Responsive Design', 'Component-Based UI Development']
+            },
+            {
+              title: 'Backend & APIs',
+              icon: 'dns',
+              color: 'text-emerald-400',
+              bg: 'bg-emerald-400/10',
+              skills: ['Node.js & Express.js', 'REST API Development', 'Authentication (Basic JWT)']
+            },
+            {
+              title: 'Database & Backend Services',
+              icon: 'database',
+              color: 'text-purple-400',
+              bg: 'bg-purple-400/10',
+              skills: ['MySQL & MongoDB', 'Supabase / Firebase (Backend Services)', 'Data Handling & CRUD Operations']
+            },
+            {
+              title: 'Cross-Platform Development',
+              icon: 'devices',
+              color: 'text-amber-400',
+              bg: 'bg-amber-400/10',
+              skills: ['Web Applications', 'React Native (Basic)', 'Progressive Web Apps (PWA)']
+            }
+          ].map((group) => (
+            <div key={group.title} className="group relative rounded-2xl bg-slate-800/40 backdrop-blur-sm border border-slate-700/50 p-6 hover:border-primary/50 hover:shadow-glow transition-all duration-300 overflow-hidden">
+              {/* Subtle gradient background on hover */}
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              
+              <div className="relative z-10">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className={`size-10 rounded-lg ${group.bg} flex items-center justify-center ${group.color}`}>
+                    <span className="material-symbols-outlined text-xl">{group.icon}</span>
+                  </div>
+                  <h4 className="font-bold text-white text-lg">{group.title}</h4>
+                </div>
+                
+                <div className="flex flex-wrap gap-2">
+                  {group.skills.map(skill => (
+                    <span key={skill} className="px-3 py-1.5 bg-slate-700/40 text-slate-300 rounded-lg text-sm border border-slate-600/30 hover:bg-primary/20 hover:text-white hover:border-primary/40 transition-all cursor-default">
+                      {skill}
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
           ))}

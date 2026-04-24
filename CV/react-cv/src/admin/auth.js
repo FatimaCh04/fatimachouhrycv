@@ -42,7 +42,7 @@ export const AdminData = {
   },
 
   getProfileFromSupabase: async () => {
-    const { data } = await supabase.from('profile').select('name, title, tagline, photo').limit(1).maybeSingle();
+    const { data } = await supabase.from('profile').select('name, title, tagline, photo').eq('id', 1).maybeSingle();
     return data || null;
   },
 
@@ -55,7 +55,11 @@ export const AdminData = {
       tagline: (data.tagline || '').trim(),
       photo: data.photo || null,
     };
-    await supabase.from('profile').upsert(row, { onConflict: 'id' });
+    const { error } = await supabase.from('profile').upsert(row, { onConflict: 'id' });
+    if (error) {
+      console.error('Error saving profile to Supabase:', error);
+      throw error;
+    }
   },
 
   getBlogPosts: async () => {

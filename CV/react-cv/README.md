@@ -40,7 +40,7 @@ create table if not exists profile (
   tagline text,
   photo text
 );
-insert into profile (id, name, title, tagline, photo) values (1, 'Fatima Choudhry', 'Software Engineering Student', 'Building scalable automation and custom software solutions.', null)
+insert into profile (id, name, title, tagline, photo) values (1, 'Fatima Choudhry', 'Software Engineer | Full Stack & Cross-Platform Developer', 'Building scalable automation and custom software solutions.', null)
 on conflict (id) do nothing;
 ```
 

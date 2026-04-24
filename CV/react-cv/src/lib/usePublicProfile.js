@@ -3,7 +3,7 @@ import { useSupabaseQuery } from './useSupabaseQuery';
 
 const DEFAULT_PROFILE = {
   name: 'Fatima Choudhry',
-  title: 'Software Engineering Student',
+  title: 'Software Engineer | Full Stack & Cross-Platform Developer',
   tagline: 'Building scalable automation and custom software solutions.',
   photo: '/assets/images/profile.jpg',
 };
@@ -11,6 +11,7 @@ const DEFAULT_PROFILE = {
 export function usePublicProfile() {
   const { data, loading } = useSupabaseQuery('profile', {
     select: 'name, title, tagline, photo',
+    filter: { column: 'id', value: 1 },
     limit: 1,
     single: true,
     cacheKey: 'supabase_profile',
