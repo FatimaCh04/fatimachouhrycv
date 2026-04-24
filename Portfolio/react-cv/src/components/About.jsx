@@ -23,7 +23,7 @@ function About() {
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-lg text-slate-300 leading-relaxed mb-4">
-              I'm a Software Engineering student with a focus on building scalable solutions. I turn complex problems into simple, elegant systems through clean code and modern tools.
+              I'm a Software Engineer with a focus on Full Stack and Cross-Platform development. I turn complex problems into simple, elegant systems through clean code and modern tools.
             </p>
             <p className="text-slate-400 leading-relaxed">
               My work spans custom software, process automation, and robust backend design. I build tools that save time and scale with your business.

@@ -3,7 +3,7 @@ import { useSupabaseQuery } from './useSupabaseQuery';
 
 const DEFAULT_PROFILE = {
   name: 'Fatima Choudhry',
-  title: 'Software Engineering Student',
+  title: 'Software Engineer | Full Stack & Cross-Platform Developer',
   tagline: 'Building scalable automation and custom software solutions.',
   photo: '/assets/images/profile.jpg',
 };
