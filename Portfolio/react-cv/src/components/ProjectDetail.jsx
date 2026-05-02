@@ -29,7 +29,7 @@ function GithubIcon({ className = 'size-5' }) {
   );
 }
 
-const PROJECT_DETAIL_SELECT = 'id, title, description, category, technologies, image, live_link, github_link, created_at';
+const PROJECT_DETAIL_SELECT = '*';
 
 function ProjectDetail() {
   const { id } = useParams();

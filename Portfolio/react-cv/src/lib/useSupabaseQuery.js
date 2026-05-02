@@ -1,18 +1,21 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from './supabaseClient';
 
-const DEFAULT_TTL_MS = 5 * 60 * 1000; // 5 minutes
+const DEFAULT_TTL_MS = 5 * 60 * 1000; // 5 minutes — affects freshness hints only; stale entries still show instantly
 
-function getFromStorage(cacheKey, ttlMs) {
-  if (typeof window === 'undefined') return null;
+/** Read cached payload if present (never discard due to TTL — stale-while-revalidate UX). */
+function readCacheEntry(cacheKey) {
+  if (typeof window === 'undefined' || !cacheKey) return { hasEntry: false, data: null };
   try {
     const raw = localStorage.getItem(cacheKey);
-    if (!raw) return null;
-    const { data, at } = JSON.parse(raw);
-    if (Date.now() - at > ttlMs) return null;
-    return data;
+    if (!raw) return { hasEntry: false, data: null };
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object' || !Object.prototype.hasOwnProperty.call(parsed, 'data')) {
+      return { hasEntry: false, data: null };
+    }
+    return { hasEntry: true, data: parsed.data };
   } catch (_) {
-    return null;
+    return { hasEntry: false, data: null };
   }
 }
 
@@ -43,10 +46,15 @@ export function useSupabaseQuery(table, options = {}) {
   } = options;
 
   const emptyValue = single ? null : [];
-  const cached = cacheKey && enabled ? getFromStorage(cacheKey, cacheTTL) : null;
+  const entry = cacheKey && enabled ? readCacheEntry(cacheKey) : { hasEntry: false, data: null };
+  const hasCache = entry.hasEntry;
 
-  const [data, setData] = useState(cached !== null ? cached : emptyValue);
-  const [loading, setLoading] = useState(enabled && cached === null);
+  const [data, setData] = useState(() => {
+    if (!hasCache) return emptyValue;
+    if (single) return entry.data;
+    return Array.isArray(entry.data) ? entry.data : emptyValue;
+  });
+  const [loading, setLoading] = useState(enabled && !hasCache);
   const [error, setError] = useState(null);
 
   const fetchData = useCallback(async () => {
@@ -73,7 +81,6 @@ export function useSupabaseQuery(table, options = {}) {
       if (cacheKey) setInStorage(cacheKey, value);
     } catch (err) {
       setError(err);
-      if (cached === null) setData(emptyValue);
     } finally {
       setLoading(false);
     }
@@ -85,9 +92,10 @@ export function useSupabaseQuery(table, options = {}) {
       setData(emptyValue);
       return;
     }
-    if (cached === null) setLoading(true);
+    const { hasEntry } = cacheKey ? readCacheEntry(cacheKey) : { hasEntry: false };
+    setLoading(!hasEntry);
     fetchData();
-  }, [fetchData, enabled]);
+  }, [fetchData, enabled, cacheKey]);
 
   const refetch = useCallback(async () => {
     setLoading(true);

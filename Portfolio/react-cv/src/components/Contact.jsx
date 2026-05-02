@@ -57,7 +57,11 @@ function Contact() {
     })
       .then((r) => {
         if (!r.ok && r.status === 404) {
-          return { ok: false, error: "Contact form works on the live site. You're likely testing locally — deploy to Vercel and set Gmail env vars (see CONTACT_EMAIL_SETUP.md), or email fatimachoudhry94@gmail.com" };
+          return {
+            ok: false,
+            error:
+              "Contact form works on the live site. You're likely testing locally — deploy to Vercel and set Gmail env vars (see CONTACT_EMAIL_SETUP.md), or email fatimachoudhry94@gmail.com",
+          };
         }
         return r.json();
       })
@@ -80,7 +84,7 @@ function Contact() {
         setFormStatus({
           type: 'error',
           message: isLocal
-            ? "Contact form runs only on the deployed site. Deploy to Vercel, add Gmail env vars (CONTACT_EMAIL_SETUP.md), or email fatimachoudhry94@gmail.com"
+            ? 'Contact form runs only on the deployed site. Deploy to Vercel, add Gmail env vars (CONTACT_EMAIL_SETUP.md), or email fatimachoudhry94@gmail.com'
             : 'Network error. Please try again or email fatimachoudhry94@gmail.com',
         });
       });
@@ -92,64 +96,151 @@ function Contact() {
     }
   };
 
+  const inputClass =
+    'w-full rounded-xl border border-slate-600 bg-slate-900/60 px-4 py-3 text-white placeholder:text-slate-500 transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30';
+
   return (
-    <div className="max-w-5xl mx-auto space-y-6 sm:space-y-8 text-left">
-      <section className="rounded-xl bg-slate-800/50 border border-slate-700 p-4 sm:p-6 md:p-8 lg:p-10 shadow-sm">
-        <h2 className="text-2xl sm:text-3xl font-extrabold text-white mb-3 sm:mb-4 flex items-center gap-2">
-          <span className="material-symbols-outlined text-primary">alternate_email</span>
-          Contact
-        </h2>
-        <p className="text-base sm:text-lg text-slate-400 mb-6 sm:mb-8">I'm open to automation and custom software opportunities. Get in touch for collaboration or just to say hi.</p>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
+    <div className="contact-page mx-auto max-w-6xl space-y-12 px-4 pb-14 text-left md:space-y-14 md:pb-20 sm:px-0">
+      <header className="border-b border-slate-800/80 pb-10 md:pb-12">
+        <div className="mx-auto w-full max-w-3xl text-center">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">Reach out</p>
+          <h1 className="font-hero mt-3 text-[clamp(1.75rem,4vw,2.75rem)] font-bold leading-[1.1] tracking-tight text-white">
+            Contact and <span className="text-accent">collaborate</span>
+          </h1>
+          <div className="featured-heading-rule mx-auto mt-5 flex max-w-md items-center justify-center gap-4" aria-hidden>
+            <span className="featured-heading-rule-line" />
+            <span className="featured-heading-rule-dot" />
+          </div>
+          <p className="mx-auto mt-6 max-w-2xl text-[15px] leading-relaxed text-slate-400 sm:text-base">
+            I&apos;m open to automation and custom software work. Use the form for project inquiries, or reach me directly via
+            the links — I&apos;ll respond when I can.
+          </p>
+        </div>
+      </header>
+
+      <section className="rounded-2xl border border-slate-700/90 bg-slate-900/35 p-6 shadow-sm sm:p-8 md:p-10">
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-12">
           <div>
-            <h3 className="text-base sm:text-lg font-bold text-white mb-3 sm:mb-4">Send a message</h3>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">Message</p>
+            <h2 className="font-hero mt-1 text-xl font-bold text-white sm:text-2xl">Send a note</h2>
+            <p className="mt-2 text-sm leading-relaxed text-slate-400">
+              Include context, timeline, and the best way to reply — helps me respond with something useful.
+            </p>
             {formStatus.message && (
-              <div className={`mb-4 p-4 rounded-lg text-sm font-medium ${formStatus.type === 'success' ? 'bg-emerald-500/20 text-emerald-200 border border-emerald-500/50' : 'bg-red-500/20 text-red-200 border border-red-500/50'}`}>
+              <div
+                className={`mt-5 rounded-xl border p-4 text-sm font-medium ${
+                  formStatus.type === 'success'
+                    ? 'border-emerald-500/50 bg-emerald-500/15 text-emerald-100'
+                    : 'border-red-500/50 bg-red-500/15 text-red-100'
+                }`}
+              >
                 {formStatus.message}
               </div>
             )}
-            <form id="contact-form" className="space-y-4" onSubmit={handleSubmit}>
+            <form id="contact-form" className="mt-6 space-y-4" onSubmit={handleSubmit}>
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-slate-300 mb-1">Name</label>
-                <input type="text" id="name" name="name" onFocus={handleInput} onInput={handleInput} className="w-full px-4 py-3 rounded-lg border border-slate-600 bg-slate-800 text-white focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Your name" required/>
+                <label htmlFor="name" className="mb-1.5 block text-sm font-medium text-slate-300">
+                  Name
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  onFocus={handleInput}
+                  onInput={handleInput}
+                  className={inputClass}
+                  placeholder="Your name"
+                  required
+                />
               </div>
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-1">Email</label>
-                <input type="email" id="email" name="email" onFocus={handleInput} onInput={handleInput} className="w-full px-4 py-3 rounded-lg border border-slate-600 bg-slate-800 text-white focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="you@example.com" required/>
+                <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-slate-300">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  onFocus={handleInput}
+                  onInput={handleInput}
+                  className={inputClass}
+                  placeholder="you@example.com"
+                  required
+                />
               </div>
               <div>
-                <label htmlFor="message" className="block text-sm font-medium text-slate-300 mb-1">Message</label>
-                <textarea id="message" name="message" rows="4" onFocus={handleInput} onInput={handleInput} className="w-full px-4 py-3 rounded-lg border border-slate-600 bg-slate-800 text-white focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Your message..." required></textarea>
+                <label htmlFor="message" className="mb-1.5 block text-sm font-medium text-slate-300">
+                  Message
+                </label>
+                <textarea
+                  id="message"
+                  name="message"
+                  rows="5"
+                  onFocus={handleInput}
+                  onInput={handleInput}
+                  className={`${inputClass} resize-y min-h-[120px]`}
+                  placeholder="Project goals, stack, budget range, or just hello…"
+                  required
+                />
               </div>
-              <button type="submit" id="submit-btn" className="w-full bg-primary text-slate-900 px-6 py-3 rounded-lg font-semibold hover:bg-teal-400 transition-colors flex items-center justify-center gap-2 min-h-[48px] touch-manipulation">
-                <span className="material-symbols-outlined">send</span>
-                Send Message
+              <button
+                type="submit"
+                id="submit-btn"
+                className="inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3.5 text-sm font-bold text-white shadow-lg transition-colors hover:bg-primary-dark touch-manipulation"
+              >
+                <span className="material-symbols-outlined text-xl">send</span>
+                Send message
               </button>
             </form>
           </div>
-          <div>
-            <h3 className="text-base sm:text-lg font-bold text-white mb-3 sm:mb-4">Other ways to reach me</h3>
-            <ul className="space-y-3 sm:space-y-4">
+
+          <div className="flex flex-col">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">Direct</p>
+            <h2 className="font-hero mt-1 text-xl font-bold text-white sm:text-2xl">Other ways to connect</h2>
+            <p className="mt-2 text-sm leading-relaxed text-slate-400">
+              Prefer email or socials — same response window; form is best for longer briefs.
+            </p>
+            <ul className="mt-8 flex flex-1 flex-col gap-3 sm:gap-4">
               {contactLinks.map((link) => (
-                <li key={link.id} className="flex items-center gap-3 p-3 sm:p-4 rounded-xl bg-slate-800 border border-slate-700 min-h-[52px]">
-                  <span className="flex items-center justify-center size-10 rounded-lg bg-slate-700 text-primary shrink-0">
-                    <ContactLinkIcon link={link} />
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="font-medium text-white">{link.label}</p>
-                    <a href={link.url} target={link.url.startsWith('mailto:') ? undefined : '_blank'} rel={link.url.startsWith('mailto:') ? undefined : 'noopener noreferrer'} className="text-primary hover:underline break-all text-sm sm:text-base">
-                      {link.url.startsWith('mailto:') ? link.url.replace('mailto:', '') : link.label}
-                    </a>
-                  </div>
+                <li key={link.id}>
+                  <a
+                    href={link.url}
+                    target={link.url.startsWith('mailto:') ? undefined : '_blank'}
+                    rel={link.url.startsWith('mailto:') ? undefined : 'noopener noreferrer'}
+                    className="flex min-h-[56px] items-center gap-4 rounded-xl border border-slate-700/80 bg-slate-900/50 p-4 transition-[border-color,background-color,transform] duration-200 hover:border-primary/40 hover:bg-slate-800/50"
+                  >
+                    <span className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-primary">
+                      <ContactLinkIcon link={link} />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-semibold text-white">{link.label}</p>
+                      <p className="mt-1 break-all text-sm text-slate-400">
+                        {link.url.startsWith('mailto:')
+                          ? link.url.replace('mailto:', '')
+                          : link.url.replace(/^https?:\/\/(www\.)?/, '')}
+                      </p>
+                    </div>
+                    <span className="material-symbols-outlined shrink-0 text-slate-500 text-xl">chevron_right</span>
+                  </a>
                 </li>
               ))}
             </ul>
           </div>
         </div>
       </section>
-      <section className="bg-primary/20 border border-primary rounded-xl p-5 sm:p-8 text-white shadow-glow text-center">
-        <h4 className="text-xl sm:text-2xl font-bold mb-2">Let's build something together</h4>
-        <p className="text-slate-300 max-w-xl mx-auto text-sm sm:text-base">Whether you have a project in mind or just want to connect, I'd love to hear from you.</p>
+
+      <section className="relative overflow-hidden rounded-2xl border border-primary/35 bg-gradient-to-br from-primary/12 via-slate-900/55 to-slate-950/90 p-8 md:p-10">
+        <div
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_55%_at_100%_0%,rgba(79,70,229,0.14),transparent_55%)]"
+          aria-hidden
+        />
+        <div className="relative z-[1] mx-auto max-w-2xl text-center">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary/90">Next step</p>
+          <h3 className="font-hero mt-2 text-2xl font-bold text-white sm:text-3xl">Let&apos;s build something together</h3>
+          <p className="mt-3 text-[15px] leading-relaxed text-slate-300 sm:text-base">
+            Whether you have a full scope or a rough idea, we can narrow requirements and shape a realistic path forward.
+          </p>
+        </div>
       </section>
     </div>
   );

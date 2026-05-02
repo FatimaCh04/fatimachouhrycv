@@ -88,7 +88,7 @@ function ManageProfile() {
 
         <div>
           <label className="block text-sm font-medium text-slate-300 mb-1">Professional Title</label>
-          <input type="text" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 text-white focus:border-primary outline-none" placeholder="e.g. Software Engineer | Full Stack & Cross-Platform Developer" />
+          <input type="text" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-600 text-white focus:border-primary outline-none" placeholder="e.g. Software Engineer | Full Stack and Cross-Platform Developer" />
         </div>
 
         <div>

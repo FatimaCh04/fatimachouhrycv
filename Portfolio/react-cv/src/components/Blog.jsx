@@ -89,7 +89,7 @@ async function fetchWithProxy(url, timeout = 12000) {
     try {
       const res = await fetch(proxyUrl, {
         signal: AbortSignal.timeout(timeout),
-        headers: { 'Accept': 'application/rss+xml, application/xml, text/xml, */*' },
+        headers: { Accept: 'application/rss+xml, application/xml, text/xml, */*' },
       });
       if (res.ok) return await res.text();
     } catch (_) {
@@ -149,6 +149,30 @@ function setCachedBlogArticles(data, source = 'api') {
 }
 
 const SUPABASE_POSTS_SELECT = 'id, title, content, image, created_at';
+
+function BlogSkeleton() {
+  return (
+    <div className="space-y-8 pt-2 md:space-y-10">
+      {[1, 2, 3, 4].map((i) => (
+        <article
+          key={i}
+          className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/40 animate-pulse"
+        >
+          <div className="h-56 bg-slate-800/80 sm:h-64 md:h-72" />
+          <div className="space-y-3 p-6 md:p-8">
+            <div className="flex gap-2">
+              <div className="h-4 w-24 rounded bg-slate-800" />
+              <div className="h-4 w-20 rounded bg-slate-800" />
+            </div>
+            <div className="h-6 w-4/5 rounded bg-slate-800" />
+            <div className="h-3 w-full rounded bg-slate-800" />
+            <div className="h-3 w-5/6 rounded bg-slate-800" />
+          </div>
+        </article>
+      ))}
+    </div>
+  );
+}
 
 function Blog() {
   const cached = getCachedBlogArticles();
@@ -222,27 +246,6 @@ function Blog() {
     load();
   }, []);
 
-  function BlogSkeleton() {
-    return (
-      <div className="space-y-6 pt-2">
-        {[1, 2, 3, 4].map((i) => (
-          <article key={i} className="rounded-xl border border-slate-700 overflow-hidden bg-slate-800/20 animate-pulse">
-            <div className="w-full h-48 bg-slate-700/50" />
-            <div className="p-6 space-y-3">
-              <div className="flex gap-2">
-                <div className="h-4 w-24 bg-slate-700/50 rounded" />
-                <div className="h-4 w-20 bg-slate-700/50 rounded" />
-              </div>
-              <div className="h-6 bg-slate-700/50 rounded w-4/5" />
-              <div className="h-3 bg-slate-700/50 rounded w-full" />
-              <div className="h-3 bg-slate-700/50 rounded w-5/6" />
-            </div>
-          </article>
-        ))}
-      </div>
-    );
-  }
-
   const toggleExpand = (id, e) => {
     e.preventDefault();
     setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -261,102 +264,122 @@ function Blog() {
     filter === 'all' ? articles : articles.filter((a) => (a.type || '').toLowerCase() === filter.toLowerCase());
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8">
-      <div className="space-y-6">
-        <div className="text-center">
-          <h2 className="text-3xl font-extrabold text-white mb-2 flex items-center justify-center gap-2">
-            <span className="material-symbols-outlined text-primary">article</span>
-            Blog
-          </h2>
-          <p className="text-lg text-slate-400">Islamic, funny &amp; informative daily news from around the web.</p>
+    <div className="blog-page mx-auto max-w-6xl space-y-12 px-4 pb-14 md:space-y-14 md:pb-20 sm:px-0">
+      <header className="border-b border-slate-800/80 pb-10 md:pb-12">
+        <div className="mx-auto w-full max-w-3xl text-center">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">Journal</p>
+          <h1 className="font-hero mt-3 text-[clamp(1.75rem,4vw,2.75rem)] font-bold leading-[1.1] tracking-tight text-white">
+            Blog and <span className="text-accent">reads</span>
+          </h1>
+          <div className="featured-heading-rule mx-auto mt-5 flex max-w-md items-center justify-center gap-4" aria-hidden>
+            <span className="featured-heading-rule-line" />
+            <span className="featured-heading-rule-dot" />
+          </div>
+          <p className="mx-auto mt-6 max-w-2xl text-[15px] leading-relaxed text-slate-400 sm:text-base">
+            Islamic, funny, and informative picks from around the web — filter by mood, open sources in a new tab, or expand
+            posts saved in the dashboard.
+          </p>
         </div>
-        <div className="flex flex-wrap gap-2 justify-center">
+
+        <div
+          className="mx-auto mt-10 flex max-w-4xl flex-wrap justify-center gap-2"
+          role="tablist"
+          aria-label="Filter articles"
+        >
           {BLOG_FILTERS.map((f) => (
             <button
               key={f.slug}
               type="button"
+              role="tab"
+              aria-selected={filter === f.slug}
               onClick={() => setFilter(f.slug)}
-              className={`px-4 py-2 rounded-xl font-medium text-sm transition-all ${
+              className={`rounded-full px-4 py-2 text-sm font-semibold transition-all duration-200 ${
                 filter === f.slug
-                  ? 'bg-primary text-slate-900 shadow-glow'
-                  : 'bg-slate-700/60 text-slate-300 hover:bg-slate-600 hover:text-white'
+                  ? 'bg-primary text-white shadow-md shadow-primary/25 ring-1 ring-primary/40'
+                  : 'border border-slate-600/80 bg-slate-900/50 text-slate-300 hover:border-slate-500 hover:text-white'
               }`}
             >
               {f.label}
             </button>
           ))}
         </div>
-        <div className="space-y-6 pt-2" id="news-feed">
-          {loading && (
-            <>
-              <p className="text-slate-400 text-center pb-4 flex items-center justify-center gap-2" id="news-loading">
-                <span className="material-symbols-outlined animate-spin">progress_activity</span>
-                Loading latest articles…
-              </p>
-              <BlogSkeleton />
-            </>
-          )}
+      </header>
+
+      <section aria-labelledby="blog-feed-heading">
+        <h2 id="blog-feed-heading" className="sr-only">
+          Article feed
+        </h2>
+        <div className="space-y-8 pt-2 md:space-y-10" id="news-feed">
+          {loading && <BlogSkeleton />}
           {error && (
-            <p className="text-amber-400 text-center py-8" id="news-loading">
+            <p className="rounded-2xl border border-amber-500/30 bg-amber-500/10 px-6 py-8 text-center text-amber-200/90" id="news-loading">
               Could not load articles. Refresh the page or try again later.
             </p>
           )}
           {!loading && !error && articles.length === 0 && (
-            <p className="text-slate-400 text-center py-6">No articles right now. Try again later.</p>
+            <p className="rounded-2xl border border-slate-800 bg-slate-900/40 px-6 py-12 text-center text-slate-400">
+              No articles right now. Try again later.
+            </p>
           )}
           {!loading && !error && articles.length > 0 && filteredArticles.length === 0 && (
-            <p className="text-slate-400 text-center py-6">No articles in this category. Try another filter.</p>
+            <p className="rounded-2xl border border-slate-800 bg-slate-900/40 px-6 py-12 text-center text-slate-400">
+              Nothing in this category — try &quot;All&quot; or another filter.
+            </p>
           )}
           {!loading &&
             !error &&
             filteredArticles.map((a, idx) => {
-              const desc = (a.content || '')
-                .replace(/<[^>]+>/g, '')
-                .trim()
-                .slice(0, 180);
-              const showDesc = desc.length === 180 ? desc + '…' : desc || 'Read the full article.';
+              const EXCERPT_LEN = 260;
+              const rawStripped = (a.content || '').replace(/<[^>]+>/g, '').trim();
+              const desc = rawStripped.slice(0, EXCERPT_LEN);
+              const showDesc =
+                desc.length === EXCERPT_LEN && rawStripped.length > EXCERPT_LEN
+                  ? `${desc}…`
+                  : desc || 'Read the full article.';
+              const hasLongBody = rawStripped.length > EXCERPT_LEN;
               const isExternal = source === 'api' && a.link;
 
               const placeholderImg = `https://picsum.photos/800/400?random=blog-${(a.id || idx).toString().slice(-8)}`;
-              const imgUrl = (a.image && a.image.trim()) ? a.image : placeholderImg;
+              const imgUrl = a.image && a.image.trim() ? a.image : placeholderImg;
               return (
                 <article
                   key={a.id || idx}
-                  className="rounded-xl border border-slate-700 overflow-hidden bg-slate-800/20 hover:bg-slate-800/50 hover:border-primary/50 hover:shadow-lg transition-all duration-200 text-left"
+                  className="group relative overflow-hidden rounded-2xl border border-slate-700/90 bg-slate-900/35 text-left shadow-sm transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-0.5 hover:border-primary/35 hover:shadow-[0_16px_36px_-20px_rgba(15,23,42,0.85)]"
                 >
-                  <div className="w-full h-48 bg-slate-800 shrink-0 overflow-hidden">
+                  <span className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-[3px] bg-gradient-to-r from-primary via-primary/80 to-accent opacity-95" />
+                  <div className="relative h-56 w-full shrink-0 overflow-hidden bg-slate-950 sm:h-64 md:h-72">
                     <img
                       src={imgUrl}
                       alt=""
-                      className="w-full h-full object-cover block"
+                      className="block size-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                       loading="lazy"
                       decoding="async"
+                      fetchPriority={idx < 2 ? 'high' : 'low'}
                       onError={(e) => {
                         if (e.target.src !== placeholderImg) {
                           e.target.src = placeholderImg;
                         }
                       }}
                     />
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/50 to-transparent" />
                   </div>
-                  <div className="p-6">
-                    <div className="flex flex-wrap items-center gap-2 text-sm text-slate-400 mb-2">
-                      <span className="material-symbols-outlined text-base">calendar_today</span>
+                  <div className="relative p-6 md:p-8">
+                    <div className="mb-3 flex flex-wrap items-center gap-2 text-sm text-slate-400">
+                      <span className="material-symbols-outlined text-base text-slate-500">calendar_today</span>
                       <time>{formatDate(a.created_at)}</time>
                       {a.type && (
-                        <span className="px-2 py-0.5 rounded bg-primary/20 text-primary text-xs font-semibold">
+                        <span className="rounded-md border border-primary/25 bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">
                           {a.type}
                         </span>
                       )}
-                      {a.source && (
-                        <span className="text-slate-500 text-xs">via {a.source}</span>
-                      )}
+                      {a.source && <span className="text-xs text-slate-500">via {a.source}</span>}
                     </div>
-                    <h3 className="text-xl font-bold text-white mb-2">{a.title || 'Untitled'}</h3>
-                    <p className="text-slate-300">{showDesc}</p>
-                    {a.content && a.content.length > 180 && (
+                    <h3 className="font-hero text-xl font-bold text-white sm:text-[1.35rem]">{a.title || 'Untitled'}</h3>
+                    <p className="mt-3 text-[15px] leading-relaxed text-slate-300 sm:text-base">{showDesc}</p>
+                    {hasLongBody && (
                       <>
                         <div
-                          className={`post-full-content mt-4 pt-4 border-t border-slate-600 text-slate-300 text-sm whitespace-pre-wrap ${
+                          className={`post-full-content mt-4 border-t border-slate-700/70 pt-4 text-sm leading-relaxed text-slate-300 whitespace-pre-wrap ${
                             expanded[a.id] ? '' : 'hidden'
                           }`}
                         >
@@ -365,7 +388,7 @@ function Blog() {
                         <button
                           type="button"
                           onClick={(e) => toggleExpand(a.id, e)}
-                          className="read-more-btn inline-flex items-center gap-1 text-primary font-semibold mt-3 hover:underline"
+                          className="read-more-btn mt-3 inline-flex items-center gap-1 text-sm font-semibold text-accent transition-colors hover:text-white"
                         >
                           {expanded[a.id] ? (
                             <>
@@ -384,7 +407,7 @@ function Blog() {
                         href={a.link}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-primary font-medium mt-3 hover:underline text-sm"
+                        className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary transition-colors hover:text-teal-300"
                       >
                         View original <span className="material-symbols-outlined text-base">open_in_new</span>
                       </a>
@@ -394,19 +417,29 @@ function Blog() {
               );
             })}
         </div>
-      </div>
-      <section className="bg-primary/20 border border-primary rounded-xl p-8 flex flex-col md:flex-row items-center justify-between text-white shadow-glow">
-        <div className="text-left">
-          <h4 className="text-2xl font-bold mb-2">Stay in touch</h4>
-          <p className="text-slate-300">Have a question or want to collaborate?</p>
+      </section>
+
+      <section className="relative overflow-hidden rounded-2xl border border-primary/35 bg-gradient-to-br from-primary/12 via-slate-900/55 to-slate-950/90 p-8 md:p-10">
+        <div
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_55%_at_100%_0%,rgba(79,70,229,0.14),transparent_55%)]"
+          aria-hidden
+        />
+        <div className="relative z-[1] flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
+          <div className="max-w-xl text-center lg:text-left">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary/90">Stay in touch</p>
+            <h3 className="font-hero mt-2 text-2xl font-bold text-white sm:text-3xl">Want to discuss an idea?</h3>
+            <p className="mt-3 text-[15px] leading-relaxed text-slate-300 sm:text-base">
+              Questions, collaboration, or feedback — send a message and I&apos;ll reply when I can.
+            </p>
+          </div>
+          <Link
+            className="home-collab-cta relative z-[1] inline-flex min-h-[48px] w-full shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-8 py-3.5 text-sm font-bold text-white shadow-lg transition-colors hover:bg-primary-dark lg:w-auto touch-manipulation"
+            to="/contact"
+          >
+            <span className="material-symbols-outlined text-xl">send</span>
+            Get in touch
+          </Link>
         </div>
-        <Link
-          className="mt-6 md:mt-0 px-8 py-3 bg-primary text-slate-900 rounded-lg font-bold hover:bg-teal-400 transition-colors flex items-center gap-2"
-          to="/contact"
-        >
-          <span className="material-symbols-outlined">send</span>
-          Get in Touch
-        </Link>
       </section>
     </div>
   );

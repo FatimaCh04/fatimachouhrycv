@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSupabaseQuery } from '../lib/useSupabaseQuery';
+import {
+  PORTFOLIO_GRID_SELECT,
+  PORTFOLIO_GRID_CACHE_KEY,
+  PORTFOLIO_GRID_CACHE_TTL_MS,
+} from '../lib/portfolioCache';
 
 const CATEGORIES = [
   { slug: 'all', label: 'All' },
@@ -19,7 +24,11 @@ function getCategoryLabel(slug) {
 function GithubIcon({ className = 'size-5' }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" />
+      <path
+        fillRule="evenodd"
+        d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
+        clipRule="evenodd"
+      />
     </svg>
   );
 }
@@ -32,18 +41,21 @@ function parseTechnologies(value) {
 
 function PortfolioSkeleton() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-      {[1, 2, 3, 4].map((i) => (
-        <article key={i} className="flex flex-col rounded-xl border border-slate-700 overflow-hidden animate-pulse">
-          <div className="h-48 bg-slate-700/50" />
-          <div className="p-4 space-y-3">
-            <div className="h-4 bg-slate-700/50 rounded w-1/3" />
-            <div className="h-5 bg-slate-700/50 rounded w-3/4" />
-            <div className="h-3 bg-slate-700/50 rounded w-full" />
-            <div className="h-3 bg-slate-700/50 rounded w-5/6" />
+    <div className="grid grid-cols-1 gap-5 pt-2 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+      {[1, 2, 3, 4, 5, 6].map((i) => (
+        <article
+          key={i}
+          className="flex animate-pulse flex-col overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/40"
+        >
+          <div className="aspect-[4/3] max-h-[180px] bg-slate-800/80 sm:max-h-[200px]" />
+          <div className="space-y-2.5 p-4">
+            <div className="h-3 w-24 rounded bg-slate-800" />
+            <div className="h-5 w-4/5 rounded bg-slate-800" />
+            <div className="h-3 w-full rounded bg-slate-800" />
+            <div className="h-3 w-11/12 rounded bg-slate-800" />
             <div className="flex gap-2 pt-2">
-              <div className="h-6 w-16 bg-slate-700/50 rounded" />
-              <div className="h-6 w-20 bg-slate-700/50 rounded" />
+              <div className="h-7 w-16 rounded-md bg-slate-800" />
+              <div className="h-7 w-20 rounded-md bg-slate-800" />
             </div>
           </div>
         </article>
@@ -52,149 +64,209 @@ function PortfolioSkeleton() {
   );
 }
 
-const PROJECTS_SELECT = 'id, title, description, category, technologies, image, live_link, github_link, created_at';
-
 function Portfolio() {
   const navigate = useNavigate();
   const [filter, setFilter] = useState('all');
   const { data: projects = [], loading } = useSupabaseQuery('projects', {
-    select: PROJECTS_SELECT,
+    select: PORTFOLIO_GRID_SELECT,
     orderBy: 'created_at',
     orderAsc: false,
     limit: 50,
-    cacheKey: 'portfolio_projects',
-    cacheTTL: 5 * 60 * 1000,
+    cacheKey: PORTFOLIO_GRID_CACHE_KEY,
+    cacheTTL: PORTFOLIO_GRID_CACHE_TTL_MS,
   });
 
   const categoryToSlug = (s) => (s || '').toLowerCase().trim().replace(/\s+/g, '-');
   const filteredProjects =
-    filter === 'all'
-      ? projects
-      : projects.filter((p) => categoryToSlug(p.category) === filter);
+    filter === 'all' ? projects : projects.filter((p) => categoryToSlug(p.category) === filter);
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8">
-      <div className="space-y-6 text-center">
-        <h2 className="text-3xl font-extrabold text-white flex items-center justify-center gap-2">
-          <span className="material-symbols-outlined text-primary">folder_open</span>
-          My Portfolio
-        </h2>
-        <p className="text-slate-400">Recent work and projects</p>
+    <div className="portfolio-page mx-auto max-w-7xl space-y-12 px-4 pb-14 md:space-y-14 md:pb-20 sm:px-0">
+      <header className="portfolio-page-hero border-b border-slate-800/80 pb-10 md:pb-12">
+        <div className="mx-auto w-full max-w-3xl text-center">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">Work</p>
+          <h1 className="font-hero mt-3 text-[clamp(1.75rem,4vw,2.75rem)] font-bold leading-[1.1] tracking-tight text-white">
+            Portfolio and <span className="text-accent">projects</span>
+          </h1>
+          <div
+            className="featured-heading-rule mx-auto mt-5 flex max-w-md items-center justify-center gap-4"
+            aria-hidden
+          >
+            <span className="featured-heading-rule-line" />
+            <span className="featured-heading-rule-dot" />
+          </div>
+          <p className="mx-auto mt-6 max-w-2xl text-[15px] leading-relaxed text-slate-400 sm:text-base">
+            Selected builds and experiments — filter by stack or domain. Open a card for full detail, links, and context.
+          </p>
+        </div>
 
-        <div className="flex flex-wrap gap-2 justify-center" id="portfolio-filters">
+        <div
+          className="portfolio-filters mx-auto mt-10 flex max-w-4xl flex-wrap justify-center gap-2"
+          id="portfolio-filters"
+          role="tablist"
+          aria-label="Filter projects by category"
+        >
           {CATEGORIES.map((cat) => (
             <button
               key={cat.slug}
               type="button"
+              role="tab"
+              aria-selected={filter === cat.slug}
               onClick={() => setFilter(cat.slug)}
-              className={`portfolio-filter px-4 py-2 rounded-xl font-medium text-sm transition-all ${
+              className={`rounded-full px-4 py-2 text-sm font-semibold transition-all duration-200 ${
                 filter === cat.slug
-                  ? 'bg-primary text-slate-900 shadow-glow'
-                  : 'bg-slate-700/60 text-slate-300 hover:bg-slate-600 hover:text-white'
+                  ? 'bg-primary text-white shadow-md shadow-primary/25 ring-1 ring-primary/40'
+                  : 'border border-slate-600/80 bg-slate-900/50 text-slate-300 hover:border-slate-500 hover:text-white'
               }`}
             >
               {cat.label}
             </button>
           ))}
         </div>
+      </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2" id="portfolio-grid">
-          {loading ? (
-            <>
-              <p className="col-span-full text-slate-400 text-center text-sm">Loading projects...</p>
-              <PortfolioSkeleton />
-            </>
-          ) : filteredProjects.length === 0 ? (
-            <p className="text-slate-400 col-span-full">
-              {projects.length === 0
-                ? 'No projects found. Add some from the Admin Dashboard.'
-                : `No projects in this category. Try "All" or another filter.`}
-            </p>
-          ) : (
-            filteredProjects.map((p, idx) => {
-              const techList = parseTechnologies(p.technologies);
+      <section aria-labelledby="portfolio-grid-heading">
+        <h2 id="portfolio-grid-heading" className="sr-only">
+          Project grid
+        </h2>
+        {loading ? (
+          <PortfolioSkeleton />
+        ) : filteredProjects.length === 0 ? (
+          <p className="rounded-2xl border border-slate-800 bg-slate-900/40 px-6 py-12 text-center text-slate-400">
+            {projects.length === 0
+              ? 'No projects yet. Add them from the admin dashboard or run your Supabase seed.'
+              : 'Nothing in this category — try “All” or pick another filter.'}
+          </p>
+        ) : (
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6" id="portfolio-grid">
+            {filteredProjects.map((p, idx) => {
+              const techList = parseTechnologies(p.technologies).slice(0, 5);
+              const isMobileCat = categoryToSlug(p.category) === 'mobile-app-development';
+              const imgClass = isMobileCat
+                ? 'size-full object-contain object-center transition-transform duration-300 group-hover:scale-[1.02]'
+                : 'size-full object-cover transition-transform duration-300 group-hover:scale-[1.03]';
+
               return (
-                <article key={p.id || idx} className="portfolio-item flex flex-col rounded-xl border border-slate-700 overflow-hidden hover:border-primary/30 transition-colors group">
-                  {/* 1. Picture - baki sab object-cover; sirf Mobile App Development object-contain */}
-                  <div className="h-48 bg-slate-800 flex items-center justify-center overflow-hidden shrink-0">
-                    {p.image && p.image.length > 0 ? (
+                <article
+                  key={p.id || idx}
+                  className="portfolio-project-card group relative flex flex-col overflow-hidden rounded-xl border border-slate-700/90 bg-slate-900/35 shadow-sm transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-0.5 hover:border-primary/35 hover:shadow-[0_16px_36px_-20px_rgba(15,23,42,0.85)]"
+                >
+                  <span className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-[3px] bg-gradient-to-r from-primary via-primary/80 to-accent opacity-95" />
+
+                  <div className="relative z-[2] aspect-[4/3] max-h-[180px] shrink-0 overflow-hidden bg-slate-950 sm:max-h-[200px]">
+                    {p.image && String(p.image).length > 0 ? (
                       <img
                         src={p.image}
-                        alt={p.title}
-                        className={categoryToSlug(p.category) === 'mobile-app-development' ? 'w-full h-full object-contain object-center group-hover:scale-105 transition-transform duration-300 bg-slate-800' : 'size-full object-cover group-hover:scale-105 transition-transform duration-300'}
+                        alt=""
+                        className={imgClass}
+                        loading="lazy"
+                        decoding="async"
+                        fetchPriority={idx < 3 ? 'high' : 'low'}
                         onError={(e) => {
                           e.target.onerror = null;
                           e.target.style.display = 'none';
                           const wrap = e.target.parentElement;
-                          const placeholder = document.createElement('span');
-                          placeholder.className = 'material-symbols-outlined text-6xl text-slate-400';
-                          placeholder.textContent = 'image';
-                          wrap.appendChild(placeholder);
+                          if (wrap && !wrap.querySelector('[data-ph]')) {
+                            const placeholder = document.createElement('span');
+                            placeholder.setAttribute('data-ph', '1');
+                            placeholder.className = 'material-symbols-outlined text-5xl text-slate-500';
+                            placeholder.textContent = 'image';
+                            wrap.appendChild(placeholder);
+                          }
                         }}
                       />
                     ) : (
-                      <span className="material-symbols-outlined text-6xl text-slate-400 group-hover:text-primary transition-colors">image</span>
-                    )}
-                  </div>
-                  {/* 2. Category (picture ke neeche) */}
-                  {p.category && (
-                    <p className="px-4 pt-3 text-xs font-bold tracking-wider text-primary">
-                      {getCategoryLabel(p.category)}
-                    </p>
-                  )}
-                  {/* 3. Project name */}
-                  <div className="px-4 pt-1">
-                    <h3 className="font-bold text-white text-lg">{p.title}</h3>
-                  </div>
-                  {/* 4. Description */}
-                  <div className="px-4 pt-2 flex-1 min-h-0">
-                    <p className="text-sm text-slate-300 line-clamp-3">{p.description}</p>
-                  </div>
-                  {/* 5. Technologies - halka shade, kam border */}
-                  {techList.length > 0 && (
-                    <div className="px-4 pt-3 flex flex-wrap gap-2">
-                      {techList.map((tech, i) => (
-                        <span key={i} className="px-2.5 py-1 rounded-md bg-primary/10 text-primary text-xs font-medium border border-primary/20">
-                          {tech}
+                      <div className="flex size-full items-center justify-center bg-slate-900">
+                        <span className="material-symbols-outlined text-5xl text-slate-600 transition-colors group-hover:text-primary/80">
+                          image
                         </span>
-                      ))}
-                    </div>
-                  )}
-                  {/* 6. Live View & Github - zyada fasla, Live/View full-width, Github icon */}
-                  <div className="p-4 pt-8 flex flex-col gap-4 border-t border-slate-700/50 mt-auto">
-                    {(p.live_link || p.id) && (
+                      </div>
+                    )}
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent opacity-90" />
+                  </div>
+
+                  <div className="relative z-[2] flex flex-1 flex-col p-4">
+                    {p.category && (
+                      <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-accent/90">
+                        {getCategoryLabel(p.category)}
+                      </p>
+                    )}
+                    <h3 className="mt-1.5 font-hero text-base font-bold leading-snug text-white sm:text-lg">{p.title}</h3>
+                    <p className="mt-2 flex-1 text-[13px] leading-relaxed text-slate-400 line-clamp-2 sm:line-clamp-3 sm:text-sm">{p.description}</p>
+
+                    {techList.length > 0 && (
+                      <div className="mt-3 flex flex-wrap gap-1.5">
+                        {techList.map((tech, i) => (
+                          <span
+                            key={`${p.id}-${tech}-${i}`}
+                            className="rounded border border-primary/20 bg-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary sm:text-xs"
+                          >
+                            {tech}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    <div className="mt-4 flex flex-col gap-2.5 border-t border-slate-700/60 pt-4 sm:flex-row sm:items-center sm:justify-between">
                       <button
                         type="button"
                         onClick={() => navigate(`/project/${p.id}`)}
-                        className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-primary/25 text-primary font-semibold text-sm hover:bg-primary/35 transition-colors border border-primary/30"
+                        className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-primary px-3 py-2.5 text-xs font-bold text-white shadow-md transition-colors hover:bg-primary-dark sm:w-auto sm:min-w-[120px] sm:text-sm"
                       >
-                        <span className="material-symbols-outlined text-xl">open_in_new</span>
-                        Live / View
+                        <span className="material-symbols-outlined text-base">arrow_forward</span>
+                        View project
                       </button>
-                    )}
-                    {p.github_link && (
-                      <a href={p.github_link} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 text-sm font-semibold text-slate-400 hover:text-white transition-colors">
-                        <GithubIcon className="size-5" />
-                        Github
-                      </a>
-                    )}
+                      <div className="flex flex-wrap items-center justify-center gap-4 sm:justify-end">
+                        {p.live_link && String(p.live_link).trim() && (
+                          <a
+                            href={p.live_link}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent hover:text-white sm:text-sm"
+                          >
+                            <span className="material-symbols-outlined text-base">open_in_new</span>
+                            Live demo
+                          </a>
+                        )}
+                        {p.github_link && String(p.github_link).trim() && (
+                          <a
+                            href={p.github_link}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-2 text-xs font-semibold text-slate-400 transition-colors hover:text-white sm:text-sm"
+                          >
+                            <GithubIcon className="size-5" />
+                            GitHub
+                          </a>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </article>
               );
-            })
-          )}
-        </div>
-      </div>
+            })}
+          </div>
+        )}
+      </section>
 
-      <section className="bg-primary/20 border border-primary rounded-xl p-8 flex flex-col md:flex-row items-center justify-between text-white shadow-glow text-left">
-        <div>
-          <h4 className="text-2xl font-bold mb-2">Like what you see?</h4>
-          <p className="text-slate-300">Let's discuss your next project.</p>
+      <section className="portfolio-cta-banner relative overflow-hidden rounded-2xl border border-primary/35 bg-gradient-to-br from-primary/12 via-slate-900/55 to-slate-950/90 p-8 md:p-10">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_55%_at_100%_0%,rgba(79,70,229,0.14),transparent_55%)]" aria-hidden />
+        <div className="relative z-[1] flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
+          <div className="max-w-xl text-center lg:text-left">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary/90">Collaborate</p>
+            <h3 className="font-hero mt-2 text-2xl font-bold text-white sm:text-3xl">Like what you see?</h3>
+            <p className="mt-3 text-[15px] leading-relaxed text-slate-300 sm:text-base">
+              Share goals and constraints — I’ll help shape scope, milestones, and a realistic delivery path.
+            </p>
+          </div>
+          <Link
+            className="relative z-[1] inline-flex min-h-[48px] w-full shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-8 py-3.5 text-sm font-bold text-white shadow-lg transition-colors hover:bg-primary-dark lg:w-auto touch-manipulation"
+            to="/contact"
+          >
+            <span className="material-symbols-outlined text-xl">send</span>
+            Get in touch
+          </Link>
         </div>
-        <Link className="mt-6 md:mt-0 px-8 py-3 bg-primary text-slate-900 rounded-lg font-bold hover:bg-teal-400 transition-colors flex items-center gap-2" to="/contact">
-          <span className="material-symbols-outlined">send</span>
-          Get in Touch
-        </Link>
       </section>
     </div>
   );

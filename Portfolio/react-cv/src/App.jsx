@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Outlet, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Home from './components/Home';
 import About from './components/About';
@@ -10,6 +10,7 @@ import Blog from './components/Blog';
 import Contact from './components/Contact';
 import Resume from './components/Resume';
 import Footer from './components/Footer';
+import { prefetchPortfolioGrid } from './lib/portfolioCache';
 
 // Admin Components
 import AdminLayout from './admin/components/AdminLayout';
@@ -21,13 +22,32 @@ import ManageProjects from './admin/pages/ManageProjects';
 import ManageServices from './admin/pages/ManageServices';
 import ManageContactLinks from './admin/pages/ManageContactLinks';
 
+/** Har route change par viewport top par — warna nayi page purani scroll position par “end” se dikhti hai */
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  React.useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  }, [pathname]);
+  return null;
+}
+
 function FrontLayout() {
+  const location = useLocation();
+  const isHome = location.pathname === '/' || location.pathname === '/index.html';
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+
   React.useEffect(() => {
     if (mobileMenuOpen) document.body.classList.add('mobile-menu-open');
     else document.body.classList.remove('mobile-menu-open');
     return () => document.body.classList.remove('mobile-menu-open');
   }, [mobileMenuOpen]);
+
+  /** Warm portfolio cache after first paint — Portfolio opens with data already in localStorage */
+  React.useEffect(() => {
+    const t = window.setTimeout(() => prefetchPortfolioGrid(), 120);
+    return () => window.clearTimeout(t);
+  }, []);
+
   return (
     <>
       <div id="mobile-overlay" aria-hidden="true" onClick={() => setMobileMenuOpen(false)}></div>
@@ -37,9 +57,19 @@ function FrontLayout() {
           onNavClick={() => setMobileMenuOpen(false)}
           onMenuToggle={() => setMobileMenuOpen((v) => !v)}
         />
-        <main id="site-main" className="pt-28 md:pt-28 p-4 sm:p-6 md:p-8 min-h-screen">
-          <Outlet />
-          <Footer />
+        {/*
+          Navbar is fixed; flow reserve must NOT rely on #site-main padding-top alone (Tailwind p-* on main
+          would override it). A physical spacer reserves the bar height in document flow — permanent fix.
+        */}
+        <main id="site-main" className="flex min-h-screen flex-col px-4 pb-4 sm:px-6 sm:pb-6 md:px-8 md:pb-8">
+          <div
+            className={`site-main-nav-spacer shrink-0${isHome ? ' site-main-nav-spacer--home' : ''}`}
+            aria-hidden="true"
+          />
+          <div className="flex min-h-0 flex-1 flex-col">
+            <Outlet />
+            <Footer />
+          </div>
         </main>
       </div>
     </>
@@ -49,6 +79,7 @@ function FrontLayout() {
 function App() {
   return (
     <Router>
+      <ScrollToTop />
       <Routes>
         {/* Admin Routes */}
         <Route path="/admin/login" element={<AdminLogin />} />
