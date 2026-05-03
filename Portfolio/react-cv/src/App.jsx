@@ -10,7 +10,7 @@ import Blog from './components/Blog';
 import Contact from './components/Contact';
 import Resume from './components/Resume';
 import Footer from './components/Footer';
-import { prefetchPortfolioGrid } from './lib/portfolioCache';
+import { ProfileProvider } from './lib/PublicProfileContext.jsx';
 
 // Admin Components
 import AdminLayout from './admin/components/AdminLayout';
@@ -42,14 +42,8 @@ function FrontLayout() {
     return () => document.body.classList.remove('mobile-menu-open');
   }, [mobileMenuOpen]);
 
-  /** Warm portfolio cache after first paint — Portfolio opens with data already in localStorage */
-  React.useEffect(() => {
-    const t = window.setTimeout(() => prefetchPortfolioGrid(), 120);
-    return () => window.clearTimeout(t);
-  }, []);
-
   return (
-    <>
+    <ProfileProvider>
       <div id="mobile-overlay" aria-hidden="true" onClick={() => setMobileMenuOpen(false)}></div>
       <div className="min-h-screen">
         <Navbar
@@ -72,7 +66,7 @@ function FrontLayout() {
           </div>
         </main>
       </div>
-    </>
+    </ProfileProvider>
   );
 }
 

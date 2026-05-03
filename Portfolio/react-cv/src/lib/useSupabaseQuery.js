@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from './supabaseClient';
+import { STORAGE_CACHE_UPDATE_EVENT } from './storageCacheEvents.js';
 
 const DEFAULT_TTL_MS = 5 * 60 * 1000; // 5 minutes — affects freshness hints only; stale entries still show instantly
 
@@ -96,6 +97,33 @@ export function useSupabaseQuery(table, options = {}) {
     setLoading(!hasEntry);
     fetchData();
   }, [fetchData, enabled, cacheKey]);
+
+  /** Prime* / other writers update localStorage after first paint — sync without waiting on duplicate fetch */
+  useEffect(() => {
+    if (!enabled || !cacheKey) return undefined;
+
+    const syncFromDisk = () => {
+      const entry = readCacheEntry(cacheKey);
+      if (!entry.hasEntry) return;
+      if (single) setData(entry.data);
+      else setData(Array.isArray(entry.data) ? entry.data : []);
+      setLoading(false);
+    };
+
+    const onExternalCache = (ev) => {
+      if (ev.detail?.key !== cacheKey) return;
+      syncFromDisk();
+    };
+
+    window.addEventListener(STORAGE_CACHE_UPDATE_EVENT, onExternalCache);
+    queueMicrotask(syncFromDisk);
+    const raf = requestAnimationFrame(syncFromDisk);
+
+    return () => {
+      window.removeEventListener(STORAGE_CACHE_UPDATE_EVENT, onExternalCache);
+      cancelAnimationFrame(raf);
+    };
+  }, [cacheKey, enabled, single]);
 
   const refetch = useCallback(async () => {
     setLoading(true);

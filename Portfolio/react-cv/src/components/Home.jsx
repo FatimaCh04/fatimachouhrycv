@@ -2,9 +2,11 @@ import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { usePublicProfile } from '../lib/usePublicProfile';
 import { useSupabaseQuery } from '../lib/useSupabaseQuery';
-
-/** Use * so older DBs without optional columns (e.g. technologies) don’t fail the whole query */
-const FEATURED_PROJECTS_SELECT = '*';
+import {
+  PORTFOLIO_GRID_SELECT,
+  PORTFOLIO_GRID_CACHE_KEY,
+  PORTFOLIO_GRID_CACHE_TTL_MS,
+} from '../lib/portfolioCache';
 
 /** Home — zaroori contact fields only (baqi About / Navbar Resume se milenge) */
 function getHomeDetailRows(profile) {
@@ -37,12 +39,12 @@ function Home() {
     error: projectsError,
     refetch: refetchProjects,
   } = useSupabaseQuery('projects', {
-    select: FEATURED_PROJECTS_SELECT,
+    select: PORTFOLIO_GRID_SELECT,
     orderBy: 'created_at',
     orderAsc: false,
-    limit: 6,
-    cacheKey: 'home_featured_projects_v5',
-    cacheTTL: 5 * 60 * 1000,
+    limit: 50,
+    cacheKey: PORTFOLIO_GRID_CACHE_KEY,
+    cacheTTL: PORTFOLIO_GRID_CACHE_TTL_MS,
   });
   const featuredProjects = projects.slice(0, 3);
   useEffect(() => {
@@ -138,15 +140,22 @@ function Home() {
 
           <div className="flex justify-center md:-translate-x-0.5 lg:-translate-x-2 lg:justify-end xl:-translate-x-4">
             <figure className="home-hero-photo relative aspect-[3/4] w-full max-w-[280px] overflow-hidden rounded-3xl border border-primary/30 bg-gradient-to-br from-slate-800/80 to-slate-900 shadow-[0_0_40px_-8px_rgba(79,70,229,0.35)] sm:max-w-[min(340px,86vw)] md:max-w-[min(380px,42vw)] lg:max-w-[min(380px,100%)]">
-              <img
-                alt={profile.name}
-                className="profile-photo size-full object-cover object-center"
-                src={profile.photo}
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = '/assets/images/profile-placeholder.svg';
-                }}
-              />
+              {profile.photo ? (
+                <img
+                  alt={profile.name}
+                  key={profile.photo}
+                  className="profile-photo size-full object-cover object-center"
+                  fetchPriority="high"
+                  decoding="async"
+                  src={profile.photo}
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = '/assets/images/profile-placeholder.svg';
+                  }}
+                />
+              ) : (
+                <div className="absolute inset-0 animate-pulse bg-slate-800/70" aria-hidden />
+              )}
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/40 to-transparent" aria-hidden />
             </figure>
           </div>
@@ -226,7 +235,7 @@ function Home() {
           </div>
         </div>
 
-        {projectsLoading ? (
+        {projectsLoading && featuredProjects.length === 0 ? (
           <div className="featured-showcase-cards">
             {[0, 1, 2].map((i) => (
               <div

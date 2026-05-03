@@ -43,15 +43,22 @@ function Navbar({ mobileMenuOpen, onNavClick, onMenuToggle }) {
         >
           <div className="relative shrink-0">
             <div className="size-10 overflow-hidden rounded-full border border-primary/40 bg-slate-900 shadow-[0_0_0_1px_rgba(99,102,241,0.15)] transition-shadow group-hover:shadow-[0_0_20px_rgba(99,102,241,0.2)] sm:size-11">
-              <img
-                alt=""
-                className="size-full object-cover"
-                src={profile.photo}
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = '/assets/images/profile-placeholder.svg';
-                }}
-              />
+              {profile.photo ? (
+                <img
+                  alt=""
+                  key={profile.photo}
+                  className="size-full object-cover"
+                  fetchPriority="high"
+                  decoding="async"
+                  src={profile.photo}
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = '/assets/images/profile-placeholder.svg';
+                  }}
+                />
+              ) : (
+                <div className="size-full animate-pulse bg-slate-700/80" aria-hidden />
+              )}
             </div>
           </div>
           <div className="min-w-0 text-left">

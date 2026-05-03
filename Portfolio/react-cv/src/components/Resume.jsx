@@ -4,6 +4,11 @@ import { toCanvas } from 'html-to-image';
 import { jsPDF } from 'jspdf';
 import { usePublicProfile } from '../lib/usePublicProfile';
 import { useSupabaseQuery } from '../lib/useSupabaseQuery';
+import {
+  PORTFOLIO_GRID_SELECT,
+  PORTFOLIO_GRID_CACHE_KEY,
+  PORTFOLIO_GRID_CACHE_TTL_MS,
+} from '../lib/portfolioCache';
 
 const PDF_FILENAME = 'Fatima_Choudhry_Resume.pdf';
 
@@ -238,8 +243,6 @@ async function prepareImagesForPdfCapture(rootEl) {
   };
 }
 
-const RESUME_PROJECTS_SELECT = '*';
-
 /** Print border: matches Tailwind `primary` from index.html */
 const PRIMARY_HEX = '#4F46E5';
 
@@ -309,12 +312,12 @@ function ResumeSection({ title, children, id }) {
 function Resume() {
   const { profile } = usePublicProfile();
   const { data: projects = [] } = useSupabaseQuery('projects', {
-    select: RESUME_PROJECTS_SELECT,
+    select: PORTFOLIO_GRID_SELECT,
     orderBy: 'created_at',
     orderAsc: false,
     limit: 50,
-    cacheKey: 'portfolio_projects_v2',
-    cacheTTL: 5 * 60 * 1000,
+    cacheKey: PORTFOLIO_GRID_CACHE_KEY,
+    cacheTTL: PORTFOLIO_GRID_CACHE_TTL_MS,
   });
 
   const [downloading, setDownloading] = useState(false);
@@ -591,17 +594,25 @@ function Resume() {
           <header className="border-b border-primary/20 px-6 py-8 md:px-10 md:py-10">
             <div className="flex flex-col gap-8 sm:flex-row sm:items-start">
               <div className="resume-photo-frame mx-auto shrink-0 rounded-xl border-2 border-primary/60 bg-slate-900/80 p-1 shadow-glow sm:mx-0">
-                <img
-                  alt=""
-                  className="resume-photo-img h-40 w-32 rounded-[10px] object-cover object-center md:h-48 md:w-36"
-                  loading="eager"
-                  decoding="async"
-                  src={profile.photo}
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = '/assets/images/profile-placeholder.svg';
-                  }}
-                />
+                {profile.photo ? (
+                  <img
+                    alt=""
+                    key={profile.photo}
+                    className="resume-photo-img h-40 w-32 rounded-[10px] object-cover object-center md:h-48 md:w-36"
+                    loading="eager"
+                    decoding="async"
+                    src={profile.photo}
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = '/assets/images/profile-placeholder.svg';
+                    }}
+                  />
+                ) : (
+                  <div
+                    className="h-40 w-32 animate-pulse rounded-[10px] bg-slate-800/80 md:h-48 md:w-36"
+                    aria-hidden
+                  />
+                )}
               </div>
 
               <div className="min-w-0 flex-1 text-center sm:text-left">
