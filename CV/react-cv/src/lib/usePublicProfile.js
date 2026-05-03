@@ -1,5 +1,7 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import { useSupabaseQuery } from './useSupabaseQuery';
+
+let staleProfileCacheRemoved = false;
 
 const DEFAULT_PROFILE = {
   name: 'Fatima Choudhry',
@@ -9,6 +11,14 @@ const DEFAULT_PROFILE = {
 };
 
 export function usePublicProfile() {
+  useEffect(() => {
+    if (staleProfileCacheRemoved) return;
+    staleProfileCacheRemoved = true;
+    try {
+      localStorage.removeItem('supabase_profile');
+    } catch (_) {}
+  }, []);
+
   const { data, loading } = useSupabaseQuery('profile', {
     select: 'name, title, tagline, photo',
     filter: { column: 'id', value: 1 },
@@ -16,6 +26,8 @@ export function usePublicProfile() {
     single: true,
     cacheKey: 'supabase_profile',
     cacheTTL: 5 * 60 * 1000,
+    // Never use localStorage for profile: it caused old profile photos to flash before the latest from Supabase.
+    skipStorageHydration: true,
   });
 
   const profile = useMemo(() => {

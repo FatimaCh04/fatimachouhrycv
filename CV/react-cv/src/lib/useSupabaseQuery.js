@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from './supabaseClient';
 
 const DEFAULT_TTL_MS = 5 * 60 * 1000; // 5 minutes
@@ -42,13 +42,33 @@ export function useSupabaseQuery(table, options = {}) {
     enabled = true,
     cacheKey,
     cacheTTL = 5 * 60 * 1000,
+    /** If true, never read cached row from localStorage on mount (avoids stale profile photo flashes). */
+    skipStorageHydration = false,
+    /** If false, do not write query results to localStorage (still broadcasts CustomEvent when cacheKey is set). */
+    persistToStorage: persistToStorageOpt,
   } = options;
 
-  const emptyValue = single ? null : [];
-  const cached = cacheKey && enabled ? getFromStorage(cacheKey, cacheTTL) : null;
+  const persistToStorage = persistToStorageOpt ?? !skipStorageHydration;
 
-  const [data, setData] = useState(cached !== null ? cached : emptyValue);
-  const [loading, setLoading] = useState(enabled && cached === null);
+  const emptyValue = single ? null : [];
+
+  const hadStorageOnMountRef = useRef(null);
+  if (hadStorageOnMountRef.current === null) {
+    hadStorageOnMountRef.current =
+      !!(cacheKey && enabled && !skipStorageHydration && getFromStorage(cacheKey, cacheTTL) !== null);
+  }
+
+  const [data, setData] = useState(() => {
+    if (!cacheKey || !enabled || skipStorageHydration) return emptyValue;
+    const s = getFromStorage(cacheKey, cacheTTL);
+    return s !== null ? s : emptyValue;
+  });
+  const [loading, setLoading] = useState(() => {
+    if (!enabled) return false;
+    if (!cacheKey || skipStorageHydration) return true;
+    const s = getFromStorage(cacheKey, cacheTTL);
+    return s === null;
+  });
   const [error, setError] = useState(null);
 
   const fetchData = useCallback(async () => {
@@ -88,19 +108,19 @@ export function useSupabaseQuery(table, options = {}) {
       const value = single ? result : (Array.isArray(result) ? result : []);
       setData(value);
       if (cacheKey) {
-        setInStorage(cacheKey, value);
+        if (persistToStorage) setInStorage(cacheKey, value);
         if (typeof window !== 'undefined') {
           window.dispatchEvent(new CustomEvent('supabase_query_update', { detail: { cacheKey, value } }));
         }
       }
     } catch (err) {
       setError(err);
-      if (cached === null) setData(emptyValue);
+      if (!hadStorageOnMountRef.current || skipStorageHydration) setData(emptyValue);
     } finally {
       activePromises.delete(promiseKey);
       setLoading(false);
     }
-  }, [table, select, orderBy, orderAsc, limit, single, enabled, cacheKey, filter?.column, filter?.value]);
+  }, [table, select, orderBy, orderAsc, limit, single, enabled, cacheKey, persistToStorage, skipStorageHydration, filter?.column, filter?.value]);
 
   useEffect(() => {
     if (!cacheKey || typeof window === 'undefined') return;
@@ -136,7 +156,7 @@ export function useSupabaseQuery(table, options = {}) {
       setData(emptyValue);
       return;
     }
-    if (cached === null) setLoading(true);
+    if (!hadStorageOnMountRef.current) setLoading(true);
     fetchData();
   }, [fetchData, enabled]);
 

@@ -5,7 +5,7 @@ import { useSupabaseQuery } from '../lib/useSupabaseQuery';
 const RESUME_PROJECTS_SELECT = 'id, title, description, category, technologies, image, live_link, github_link, created_at';
 
 function Resume() {
-  const { profile } = usePublicProfile();
+  const { profile, loading: profileLoading } = usePublicProfile();
   const { data: projects = [] } = useSupabaseQuery('projects', {
     select: RESUME_PROJECTS_SELECT,
     orderBy: 'created_at',
@@ -164,7 +164,11 @@ function Resume() {
             </div>
             <div className="shrink-0 flex justify-center sm:justify-end order-1 sm:order-2">
               <div className="profile-photo-wrapper size-28 md:size-32 rounded-full border-2 border-primary p-1 shadow-glow overflow-hidden flex-shrink-0">
-                <img alt="Profile" className="profile-photo size-full rounded-full object-cover object-center" src={profile.photo} onError={(e) => { e.target.onerror = null; e.target.src = '/assets/images/profile-placeholder.svg'; }}/>
+                {profileLoading ? (
+                  <div className="profile-photo size-full rounded-full bg-slate-700 animate-pulse" aria-hidden />
+                ) : (
+                  <img alt="Profile" className="profile-photo size-full rounded-full object-cover object-center" src={profile.photo} key={profile.photo} onError={(e) => { e.target.onerror = null; e.target.src = '/assets/images/profile-placeholder.svg'; }}/>
+                )}
               </div>
             </div>
           </div>

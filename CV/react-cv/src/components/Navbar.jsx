@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { usePublicProfile } from '../lib/usePublicProfile';
 
 function Navbar({ onNavClick }) {
-  const { profile } = usePublicProfile();
+  const { profile, loading: profileLoading } = usePublicProfile();
   const getNavClass = ({ isActive }) => {
     const baseClass = "flex items-center gap-3 px-4 py-3 text-sm rounded-xl transition-all ";
     if (isActive) {
@@ -19,12 +19,17 @@ function Navbar({ onNavClick }) {
           <div className="flex flex-col items-center text-center mb-6">
             <div className="profile-photo-wrapper relative mb-4">
               <div className="size-24 rounded-full border-2 border-primary p-1 shadow-glow">
-                <img
-                  alt="Profile"
-                  className="profile-photo size-full rounded-full object-cover"
-                  src={profile.photo}
-                  onError={(e) => { e.target.onerror = null; e.target.src = '/assets/images/profile-placeholder.svg'; }}
-                />
+                {profileLoading ? (
+                  <div className="profile-photo size-full rounded-full bg-slate-700 animate-pulse" aria-hidden />
+                ) : (
+                  <img
+                    alt="Profile"
+                    className="profile-photo size-full rounded-full object-cover"
+                    src={profile.photo}
+                    key={profile.photo}
+                    onError={(e) => { e.target.onerror = null; e.target.src = '/assets/images/profile-placeholder.svg'; }}
+                  />
+                )}
               </div>
               <div className="absolute bottom-0 right-0 size-4 bg-emerald-500 border-2 border-sidebar rounded-full"></div>
             </div>

@@ -2,7 +2,7 @@ import React from 'react';
 import { usePublicProfile } from '../lib/usePublicProfile';
 
 function About() {
-  const { profile } = usePublicProfile();
+  const { profile, loading: profileLoading } = usePublicProfile();
   return (
     <div className="max-w-5xl mx-auto space-y-8">
       <section className="rounded-xl bg-slate-800/50 border border-slate-700 p-10 shadow-sm">
@@ -13,12 +13,17 @@ function About() {
         <div className="flex flex-col sm:flex-row gap-8 items-start">
           <div className="shrink-0">
             <div className="size-32 rounded-full border-2 border-primary p-1 shadow-glow">
-              <img
-                alt={profile.name}
-                className="profile-photo size-full rounded-full object-cover"
-                src={profile.photo}
-                onError={(e) => { e.target.onerror = null; e.target.src = '/assets/images/profile-placeholder.svg'; }}
-              />
+              {profileLoading ? (
+                <div className="profile-photo size-full rounded-full bg-slate-700 animate-pulse" aria-hidden />
+              ) : (
+                <img
+                  alt={profile.name}
+                  className="profile-photo size-full rounded-full object-cover"
+                  src={profile.photo}
+                  key={profile.photo}
+                  onError={(e) => { e.target.onerror = null; e.target.src = '/assets/images/profile-placeholder.svg'; }}
+                />
+              )}
             </div>
           </div>
           <div className="flex-1 min-w-0">

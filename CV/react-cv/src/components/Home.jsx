@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { usePublicProfile } from '../lib/usePublicProfile';
 
 function Home() {
-  const { profile } = usePublicProfile();
+  const { profile, loading: profileLoading } = usePublicProfile();
   useEffect(() => {
     const el = document.getElementById('tagline-typed');
     if (!el) return;
@@ -38,12 +38,17 @@ function Home() {
         <div className="flex flex-col items-center text-center">
           <div className="mb-4">
             <div className="size-28 rounded-full border-2 border-primary p-1 shadow-glow mx-auto">
-              <img
-                alt={profile.name}
-                className="profile-photo size-full rounded-full object-cover"
-                src={profile.photo}
-                onError={(e) => { e.target.onerror = null; e.target.src = '/assets/images/profile-placeholder.svg'; }}
-              />
+              {profileLoading ? (
+                <div className="profile-photo size-full rounded-full bg-slate-700 animate-pulse" aria-hidden />
+              ) : (
+                <img
+                  alt={profile.name}
+                  className="profile-photo size-full rounded-full object-cover"
+                  src={profile.photo}
+                  key={profile.photo}
+                  onError={(e) => { e.target.onerror = null; e.target.src = '/assets/images/profile-placeholder.svg'; }}
+                />
+              )}
             </div>
           </div>
           <h2 className="text-2xl md:text-3xl font-extrabold text-white mb-2 profile-name">{profile.name}</h2>
