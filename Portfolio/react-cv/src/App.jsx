@@ -37,9 +37,18 @@ function FrontLayout() {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
 
   React.useEffect(() => {
-    if (mobileMenuOpen) document.body.classList.add('mobile-menu-open');
-    else document.body.classList.remove('mobile-menu-open');
-    return () => document.body.classList.remove('mobile-menu-open');
+    const root = document.documentElement;
+    if (mobileMenuOpen) {
+      document.body.classList.add('mobile-menu-open');
+      root.classList.add('mobile-menu-open');
+    } else {
+      document.body.classList.remove('mobile-menu-open');
+      root.classList.remove('mobile-menu-open');
+    }
+    return () => {
+      document.body.classList.remove('mobile-menu-open');
+      root.classList.remove('mobile-menu-open');
+    };
   }, [mobileMenuOpen]);
 
   return (

@@ -41,7 +41,7 @@ function parseTechnologies(value) {
 
 function PortfolioSkeleton() {
   return (
-    <div className="grid grid-cols-1 gap-5 pt-2 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+    <div className="grid min-w-0 grid-cols-1 gap-5 pt-2 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
       {[1, 2, 3, 4, 5, 6].map((i) => (
         <article
           key={i}
@@ -81,9 +81,9 @@ function Portfolio() {
     filter === 'all' ? projects : projects.filter((p) => categoryToSlug(p.category) === filter);
 
   return (
-    <div className="portfolio-page mx-auto max-w-7xl space-y-12 px-4 pb-14 md:space-y-14 md:pb-20 sm:px-0">
-      <header className="portfolio-page-hero border-b border-slate-800/80 pb-10 md:pb-12">
-        <div className="mx-auto w-full max-w-3xl text-center">
+    <div className="portfolio-page mx-auto w-full min-w-0 max-w-7xl space-y-10 pb-12 sm:space-y-12 md:space-y-14 md:pb-20">
+      <header className="portfolio-page-hero w-full min-w-0 border-b border-slate-800/80 pb-8 sm:pb-10 md:pb-12">
+        <div className="mx-auto w-full min-w-0 max-w-3xl text-center">
           <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">Work</p>
           <h1 className="font-hero mt-3 text-[clamp(1.75rem,4vw,2.75rem)] font-bold leading-[1.1] tracking-tight text-white">
             Portfolio and <span className="text-accent">projects</span>
@@ -101,7 +101,7 @@ function Portfolio() {
         </div>
 
         <div
-          className="portfolio-filters mx-auto mt-10 flex max-w-4xl flex-wrap justify-center gap-2"
+          className="portfolio-filters mx-auto mt-8 flex w-full min-w-0 max-w-4xl flex-wrap justify-center gap-2 sm:mt-10 max-md:flex-nowrap max-md:justify-start max-md:overflow-x-auto max-md:pb-2 max-md:[-webkit-overflow-scrolling:touch]"
           id="portfolio-filters"
           role="tablist"
           aria-label="Filter projects by category"
@@ -113,7 +113,7 @@ function Portfolio() {
               role="tab"
               aria-selected={filter === cat.slug}
               onClick={() => setFilter(cat.slug)}
-              className={`rounded-full px-4 py-2 text-sm font-semibold transition-all duration-200 ${
+              className={`min-h-[44px] max-w-[min(100%,280px)] shrink-0 touch-manipulation rounded-full px-3.5 py-2 text-center text-sm font-semibold leading-snug transition-all duration-200 sm:px-4 ${
                 filter === cat.slug
                   ? 'bg-primary text-white shadow-md shadow-primary/25 ring-1 ring-primary/40'
                   : 'border border-slate-600/80 bg-slate-900/50 text-slate-300 hover:border-slate-500 hover:text-white'
@@ -138,7 +138,10 @@ function Portfolio() {
               : 'Nothing in this category — try “All” or pick another filter.'}
           </p>
         ) : (
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6" id="portfolio-grid">
+          <div
+            className="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6"
+            id="portfolio-grid"
+          >
             {filteredProjects.map((p, idx) => {
               const techList = parseTechnologies(p.technologies).slice(0, 5);
               const isMobileCat = categoryToSlug(p.category) === 'mobile-app-development';
@@ -149,7 +152,7 @@ function Portfolio() {
               return (
                 <article
                   key={p.id || idx}
-                  className="portfolio-project-card group relative flex flex-col overflow-hidden rounded-xl border border-slate-700/90 bg-slate-900/35 shadow-sm transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-0.5 hover:border-primary/35 hover:shadow-[0_16px_36px_-20px_rgba(15,23,42,0.85)]"
+                  className="portfolio-project-card group relative flex min-w-0 max-w-full flex-col overflow-hidden rounded-xl border border-slate-700/90 bg-slate-900/35 shadow-sm transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-0.5 hover:border-primary/35 hover:shadow-[0_16px_36px_-20px_rgba(15,23,42,0.85)]"
                 >
                   <span className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-[3px] bg-gradient-to-r from-primary via-primary/80 to-accent opacity-95" />
 
@@ -185,21 +188,25 @@ function Portfolio() {
                     <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent opacity-90" />
                   </div>
 
-                  <div className="relative z-[2] flex flex-1 flex-col p-4">
+                  <div className="relative z-[2] flex min-w-0 flex-1 flex-col p-3.5 sm:p-4">
                     {p.category && (
-                      <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-accent/90">
+                      <p className="break-words text-[9px] font-bold uppercase tracking-[0.18em] text-accent/90">
                         {getCategoryLabel(p.category)}
                       </p>
                     )}
-                    <h3 className="mt-1.5 font-hero text-base font-bold leading-snug text-white sm:text-lg">{p.title}</h3>
-                    <p className="mt-2 flex-1 text-[13px] leading-relaxed text-slate-400 line-clamp-2 sm:line-clamp-3 sm:text-sm">{p.description}</p>
+                    <h3 className="mt-1.5 break-words font-hero text-base font-bold leading-snug text-white sm:text-lg">
+                      {p.title}
+                    </h3>
+                    <p className="mt-2 min-h-0 flex-1 break-words text-[13px] leading-relaxed text-slate-400 line-clamp-2 sm:line-clamp-3 sm:text-sm">
+                      {p.description}
+                    </p>
 
                     {techList.length > 0 && (
-                      <div className="mt-3 flex flex-wrap gap-1.5">
+                      <div className="mt-3 flex min-w-0 flex-wrap gap-1.5">
                         {techList.map((tech, i) => (
                           <span
                             key={`${p.id}-${tech}-${i}`}
-                            className="rounded border border-primary/20 bg-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary sm:text-xs"
+                            className="max-w-full break-words rounded border border-primary/20 bg-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary sm:text-xs"
                           >
                             {tech}
                           </span>
@@ -207,24 +214,24 @@ function Portfolio() {
                       </div>
                     )}
 
-                    <div className="mt-4 flex flex-col gap-2.5 border-t border-slate-700/60 pt-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="mt-4 flex min-w-0 flex-col gap-3 border-t border-slate-700/60 pt-4 sm:flex-row sm:items-center sm:justify-between sm:gap-2.5">
                       <button
                         type="button"
                         onClick={() => navigate(`/project/${p.id}`)}
-                        className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-primary px-3 py-2.5 text-xs font-bold text-white shadow-md transition-colors hover:bg-primary-dark sm:w-auto sm:min-w-[120px] sm:text-sm"
+                        className="inline-flex min-h-[44px] w-full touch-manipulation items-center justify-center gap-1.5 rounded-lg bg-primary px-3 py-2.5 text-xs font-bold text-white shadow-md transition-colors hover:bg-primary-dark sm:w-auto sm:min-w-[120px] sm:text-sm"
                       >
-                        <span className="material-symbols-outlined text-base">arrow_forward</span>
+                        <span className="material-symbols-outlined shrink-0 text-base">arrow_forward</span>
                         View project
                       </button>
-                      <div className="flex flex-wrap items-center justify-center gap-4 sm:justify-end">
+                      <div className="flex min-w-0 flex-wrap items-center justify-center gap-x-4 gap-y-2 sm:justify-end">
                         {p.live_link && String(p.live_link).trim() && (
                           <a
                             href={p.live_link}
                             target="_blank"
                             rel="noreferrer"
-                            className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent hover:text-white sm:text-sm"
+                            className="inline-flex max-w-full min-w-0 touch-manipulation items-center gap-1.5 break-all text-xs font-semibold text-accent hover:text-white sm:text-sm"
                           >
-                            <span className="material-symbols-outlined text-base">open_in_new</span>
+                            <span className="material-symbols-outlined shrink-0 text-base">open_in_new</span>
                             Live demo
                           </a>
                         )}
@@ -233,9 +240,9 @@ function Portfolio() {
                             href={p.github_link}
                             target="_blank"
                             rel="noreferrer"
-                            className="inline-flex items-center gap-2 text-xs font-semibold text-slate-400 transition-colors hover:text-white sm:text-sm"
+                            className="inline-flex max-w-full min-w-0 touch-manipulation items-center gap-2 break-all text-xs font-semibold text-slate-400 transition-colors hover:text-white sm:text-sm"
                           >
-                            <GithubIcon className="size-5" />
+                            <GithubIcon className="size-5 shrink-0" />
                             GitHub
                           </a>
                         )}
@@ -249,10 +256,10 @@ function Portfolio() {
         )}
       </section>
 
-      <section className="portfolio-cta-banner relative overflow-hidden rounded-2xl border border-primary/35 bg-gradient-to-br from-primary/12 via-slate-900/55 to-slate-950/90 p-8 md:p-10">
+      <section className="portfolio-cta-banner relative w-full min-w-0 overflow-hidden rounded-2xl border border-primary/35 bg-gradient-to-br from-primary/12 via-slate-900/55 to-slate-950/90 p-5 sm:p-8 md:p-10">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_55%_at_100%_0%,rgba(79,70,229,0.14),transparent_55%)]" aria-hidden />
-        <div className="relative z-[1] flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
-          <div className="max-w-xl text-center lg:text-left">
+        <div className="relative z-[1] flex min-w-0 flex-col gap-6 sm:gap-8 lg:flex-row lg:items-center lg:justify-between">
+          <div className="min-w-0 max-w-xl text-center lg:text-left">
             <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary/90">Collaborate</p>
             <h3 className="font-hero mt-2 text-2xl font-bold text-white sm:text-3xl">Like what you see?</h3>
             <p className="mt-3 text-[15px] leading-relaxed text-slate-300 sm:text-base">

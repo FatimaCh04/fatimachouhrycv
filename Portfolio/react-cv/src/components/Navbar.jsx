@@ -33,7 +33,7 @@ function Navbar({ mobileMenuOpen, onNavClick, onMenuToggle }) {
   return (
     <header
       id="site-navbar"
-      className="fixed inset-x-0 top-0 z-[1000] border-b border-white/[0.06] bg-transparent shadow-[0_4px_30px_rgba(0,0,0,0.35)]"
+      className="fixed inset-x-0 top-0 z-[1000] border-b border-white/[0.06] bg-transparent pt-[env(safe-area-inset-top,0px)] shadow-[0_4px_30px_rgba(0,0,0,0.35)]"
     >
       <div className="relative mx-auto flex h-[90px] min-h-[90px] max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
         <Link
@@ -96,7 +96,7 @@ function Navbar({ mobileMenuOpen, onNavClick, onMenuToggle }) {
 
         <button
           type="button"
-          className="relative z-20 flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-slate-600/80 bg-slate-900/80 text-slate-200 transition-colors hover:border-slate-500 hover:bg-slate-800 active:bg-slate-800 md:hidden"
+          className="relative z-20 flex size-11 shrink-0 touch-manipulation items-center justify-center rounded-lg border border-slate-600/80 bg-slate-900/80 text-slate-200 transition-colors hover:border-slate-500 hover:bg-slate-800 active:bg-slate-800 md:hidden"
           aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
           aria-expanded={mobileMenuOpen}
           onClick={onMenuToggle}

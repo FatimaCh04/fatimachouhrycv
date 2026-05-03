@@ -97,7 +97,7 @@ function Contact() {
   };
 
   const inputClass =
-    'w-full rounded-xl border border-slate-600 bg-slate-900/60 px-4 py-3 text-white placeholder:text-slate-500 transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30';
+    'w-full rounded-xl border border-slate-600 bg-slate-900/60 px-4 py-3 text-base text-white placeholder:text-slate-500 transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30';
 
   return (
     <div className="contact-page mx-auto max-w-6xl space-y-12 px-4 pb-14 text-left md:space-y-14 md:pb-20 sm:px-0">

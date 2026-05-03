@@ -78,24 +78,24 @@ function Home() {
   const detailRows = getHomeDetailRows(profile);
 
   return (
-    <div className="home-page mx-auto max-w-6xl space-y-8 px-4 sm:px-0">
+    <div className="home-page mx-auto w-full min-w-0 max-w-6xl space-y-8 pb-8 sm:space-y-10">
       {/* Hero: 50 / 50 grid — full-width balance, photo anchored in right column */}
-      <section className="home-page-hero mt-0 pt-1 pb-8 md:pt-3 md:pb-12 lg:pt-4 lg:pb-14">
-        <div className="grid w-full grid-cols-1 items-center gap-8 md:gap-10 lg:grid-cols-2 lg:gap-6 xl:gap-8">
-          <div className="home-hero-stagger min-w-0 text-center md:pl-3 lg:max-w-xl lg:pl-8 lg:text-left xl:max-w-2xl xl:pl-10">
+      <section className="home-page-hero mt-0 w-full min-w-0 pt-1 pb-8 md:pt-3 md:pb-12 lg:pt-4 lg:pb-14">
+        <div className="grid w-full min-w-0 grid-cols-1 items-center gap-8 md:gap-10 lg:grid-cols-2 lg:gap-6 xl:gap-8">
+          <div className="home-hero-stagger min-w-0 max-w-full text-center md:pl-3 lg:max-w-xl lg:pl-8 lg:text-left xl:max-w-2xl xl:pl-10">
             <div className="font-hero leading-[0.95] tracking-tight">
-              <span className="block text-4xl font-bold uppercase text-slate-100 sm:text-5xl md:text-6xl lg:text-[3.25rem] xl:text-7xl">
+              <span className="block break-words text-[clamp(1.625rem,7vw,2.25rem)] font-bold uppercase text-slate-100 sm:text-5xl md:text-6xl lg:text-[3.25rem] xl:text-7xl">
                 {firstName}
               </span>
               {restName && (
-                <span className="mt-1 block text-4xl font-bold uppercase text-primary sm:text-5xl md:text-6xl lg:text-[3.25rem] xl:text-7xl">
+                <span className="mt-1 block break-words text-[clamp(1.625rem,7vw,2.25rem)] font-bold uppercase text-primary sm:text-5xl md:text-6xl lg:text-[3.25rem] xl:text-7xl">
                   {restName}
                 </span>
               )}
             </div>
-            <p className="mt-4 text-sm leading-relaxed text-slate-400 sm:text-base">{profile.title}</p>
+            <p className="mt-4 break-words px-0 text-sm leading-relaxed text-slate-400 sm:text-base">{profile.title}</p>
 
-            <div className="home-hero-quote mx-auto mt-5 max-w-xl rounded-xl border border-slate-700/50 bg-slate-800/35 px-4 py-3.5 text-left backdrop-blur-sm lg:mx-0">
+            <div className="home-hero-quote mx-auto mt-5 w-full max-w-xl rounded-xl border border-slate-700/50 bg-slate-800/35 px-3 py-3.5 text-left backdrop-blur-sm sm:px-4 lg:mx-0">
               <p
                 id="tagline-typed"
                 className="profile-tagline font-hero min-h-[1.75rem] text-base italic leading-relaxed text-accent md:text-lg"
@@ -104,7 +104,7 @@ function Home() {
               </p>
             </div>
 
-            <div className="mx-auto mt-6 max-w-xl text-left lg:mx-0">
+            <div className="mx-auto mt-6 w-full max-w-xl min-w-0 text-left lg:mx-0">
               <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500">
                 Scope of work
               </p>
@@ -120,26 +120,26 @@ function Home() {
               </ul>
             </div>
 
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-3 lg:justify-start">
+            <div className="mt-6 flex w-full min-w-0 flex-wrap items-center justify-center gap-3 lg:justify-start">
               <Link
                 to="/contact"
-                className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-bold text-white shadow-lg transition-colors hover:bg-primary-dark"
+                className="inline-flex min-h-[44px] touch-manipulation items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-bold text-white shadow-lg transition-colors hover:bg-primary-dark sm:px-6"
               >
                 Hire me
-                <span className="material-symbols-outlined text-lg">north_east</span>
+                <span className="material-symbols-outlined shrink-0 text-lg">north_east</span>
               </Link>
               <Link
                 to="/portfolio"
-                className="inline-flex items-center gap-2 rounded-xl border-2 border-slate-500 px-6 py-3 text-sm font-bold text-slate-100 transition-colors hover:border-accent hover:text-accent"
+                className="inline-flex min-h-[44px] touch-manipulation items-center gap-2 rounded-xl border-2 border-slate-500 px-5 py-3 text-sm font-bold text-slate-100 transition-colors hover:border-accent hover:text-accent sm:px-6"
               >
                 View work
-                <span className="material-symbols-outlined text-lg">open_in_new</span>
+                <span className="material-symbols-outlined shrink-0 text-lg">open_in_new</span>
               </Link>
             </div>
           </div>
 
-          <div className="flex justify-center md:-translate-x-0.5 lg:-translate-x-2 lg:justify-end xl:-translate-x-4">
-            <figure className="home-hero-photo relative aspect-[3/4] w-full max-w-[280px] overflow-hidden rounded-3xl border border-primary/30 bg-gradient-to-br from-slate-800/80 to-slate-900 shadow-[0_0_40px_-8px_rgba(79,70,229,0.35)] sm:max-w-[min(340px,86vw)] md:max-w-[min(380px,42vw)] lg:max-w-[min(380px,100%)]">
+          <div className="flex min-w-0 justify-center md:-translate-x-0.5 lg:-translate-x-2 lg:justify-end xl:-translate-x-4">
+            <figure className="home-hero-photo relative aspect-[3/4] w-full max-w-[min(280px,100%)] overflow-hidden rounded-3xl border border-primary/30 bg-gradient-to-br from-slate-800/80 to-slate-900 shadow-[0_0_40px_-8px_rgba(79,70,229,0.35)] sm:max-w-[min(340px,100%)] md:max-w-[min(380px,42vw)] lg:max-w-[min(380px,100%)]">
               {profile.photo ? (
                 <img
                   alt={profile.name}
@@ -163,7 +163,7 @@ function Home() {
       </section>
 
       {/* Profile / contact — short essentials only */}
-      <section id="personal-info-section" className="home-info-section border-t border-slate-800/80 pt-10 md:pt-14">
+      <section id="personal-info-section" className="home-info-section w-full min-w-0 border-t border-slate-800/80 pt-10 md:pt-14">
         <div className="home-contact-head-stagger text-center md:max-w-lg md:text-left">
           <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">Profile</p>
           <h2 className="font-hero mt-2 text-2xl font-bold tracking-tight text-white sm:text-3xl md:text-[2rem]">
@@ -198,7 +198,7 @@ function Home() {
       </section>
 
       {/* Quick Stats */}
-      <section className="home-stats-stagger grid grid-cols-1 gap-6 md:grid-cols-3">
+      <section className="home-stats-stagger grid min-w-0 grid-cols-1 gap-6 md:grid-cols-3">
         <div className="home-stat-pill bg-slate-800/50 border border-slate-700 p-6 rounded-xl flex items-center gap-4 transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-lg">
           <div className="size-12 rounded-lg bg-primary/20 flex items-center justify-center text-primary"><span className="material-symbols-outlined">rocket_launch</span></div>
           <div><p className="text-2xl font-bold text-white">15+</p><p className="text-sm text-slate-400">Projects Completed</p></div>
@@ -213,7 +213,7 @@ function Home() {
         </div>
       </section>
 
-      <section className="featured-showcase-section px-2 py-10 sm:px-0 md:py-14">
+      <section className="featured-showcase-section w-full min-w-0 py-10 sm:py-12 md:py-14">
         <div className="featured-showcase-heading home-featured-head-stagger mb-10 flex flex-col gap-6 sm:mb-12 md:flex-row md:items-start md:justify-between md:gap-8">
           <div className="min-w-0 flex-1 text-center md:text-left">
             <h2 className="font-hero text-[clamp(2.25rem,6vw,3.85rem)] font-bold uppercase leading-[0.95] tracking-tight">
@@ -240,7 +240,7 @@ function Home() {
             {[0, 1, 2].map((i) => (
               <div
                 key={i}
-                className="flex w-[min(86vw,360px)] shrink-0 flex-col overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/40 md:w-auto animate-pulse"
+                className="flex w-[min(100%,360px)] shrink-0 flex-col overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/40 md:w-auto animate-pulse"
               >
                 <div className="aspect-[16/11] bg-slate-800/70" />
                 <div className="space-y-3 p-5">
@@ -347,13 +347,13 @@ function Home() {
         )}
       </section>
 
-      <section className="home-collab-banner relative overflow-hidden rounded-2xl border border-primary/35 bg-gradient-to-br from-primary/12 via-slate-900/55 to-slate-950/90 p-8 md:p-10">
+      <section className="home-collab-banner relative w-full min-w-0 overflow-hidden rounded-2xl border border-primary/35 bg-gradient-to-br from-primary/12 via-slate-900/55 to-slate-950/90 p-5 sm:p-8 md:p-10">
         <div
           className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_55%_at_100%_0%,rgba(79,70,229,0.14),transparent_55%)]"
           aria-hidden
         />
-        <div className="relative z-[1] flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
-          <div className="max-w-xl text-center lg:text-left">
+        <div className="relative z-[1] flex min-w-0 flex-col gap-6 sm:gap-8 lg:flex-row lg:items-center lg:justify-between">
+          <div className="min-w-0 max-w-xl text-center lg:text-left">
             <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary/90">Collaborate</p>
             <h3 className="font-hero mt-2 text-2xl font-bold text-white sm:text-3xl">Interested in collaborating?</h3>
             <p className="mt-3 text-[15px] leading-relaxed text-slate-300 sm:text-base">

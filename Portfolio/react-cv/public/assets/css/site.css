@@ -19,8 +19,9 @@
   --accent: #35c8ff;
   --border: #2a3a52;
   --shadow-glow: rgba(17, 24, 39, 0.35);
-  /** Fixed navbar height — must match Navbar row + `.site-main-nav-spacer` */
-  --site-navbar-height: 90px;
+  /** Inner row (Tailwind h-[90px]) + notch/status safe area — keep `.site-main-nav-spacer` in sync */
+  --site-navbar-inner-height: 90px;
+  --site-navbar-height: calc(var(--site-navbar-inner-height) + env(safe-area-inset-top, 0px));
   /** Breathing room below the reserved bar (responsive; ~140px total offset to first content at max) */
   --site-main-below-nav: clamp(1.75rem, 4.5vw, 3.125rem);
   /** Scroll / anchor offset (spacer + gap, kept in sync for deep links) */
@@ -29,6 +30,8 @@
 
 html {
   scroll-padding-top: var(--site-main-pad-top);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
@@ -38,6 +41,12 @@ body {
     radial-gradient(circle at 100% 15%, rgba(53, 200, 255, 0.08), transparent 40%);
   font-family: "Manrope", sans-serif;
   letter-spacing: 0.01em;
+  overflow-x: clip;
+}
+
+html.mobile-menu-open,
+body.mobile-menu-open {
+  overflow: hidden;
 }
 
 body .text-slate-100,
@@ -93,6 +102,15 @@ section.rounded-xl:hover {
 .home-hero-quote {
   border-bottom-width: 3px;
   border-bottom-color: var(--accent);
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 36rem; /* ~max-w-xl; keeps typed tagline inside viewport when nested */
+  min-width: 0;
+}
+
+.home-page .profile-tagline {
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 /* Professional surface cards */
@@ -403,7 +421,8 @@ section.rounded-xl:hover {
   overscroll-behavior-x: contain;
   padding: 0.25rem 0 0.5rem;
   scroll-snap-type: x mandatory;
-  scroll-padding-inline: 0.75rem;
+  scroll-padding-inline: max(0.75rem, env(safe-area-inset-left, 0px))
+    max(0.75rem, env(safe-area-inset-right, 0px));
   -webkit-overflow-scrolling: touch;
   position: relative;
   z-index: 1;
@@ -443,7 +462,8 @@ section.rounded-xl:hover {
 
 .featured-premium-card {
   flex: 0 0 auto;
-  width: min(86vw, 360px);
+  /* Cap to parent width (not vw) so the strip does not blow past padded #site-main */
+  width: min(100%, 360px);
   scroll-snap-align: center;
   animation: featuredCardReveal 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   opacity: 0;
@@ -689,19 +709,26 @@ h1, h2, h3, h4 {
   letter-spacing: 0.01em;
 }
 
-/* Layout width tuning: reduce excessive side gutters on desktop */
+/*
+ * Max-width must cap at 100% of the padded #site-main — using vw here caused horizontal
+ * overflow on phones (96vw + horizontal padding > 100% of layout viewport).
+ */
 #site-main .max-w-5xl,
 #site-main .max-w-6xl {
-  max-width: min(82rem, 96vw) !important;
+  max-width: min(82rem, 100%) !important;
+}
+
+#site-main .max-w-7xl {
+  max-width: min(80rem, 100%) !important;
 }
 
 @media (min-width: 1280px) {
   #site-main .max-w-5xl {
-    max-width: min(84rem, 95vw) !important;
+    max-width: min(84rem, 100%) !important;
   }
 
   #site-main .max-w-6xl {
-    max-width: min(92rem, 95vw) !important;
+    max-width: min(92rem, 100%) !important;
   }
 }
 
@@ -760,11 +787,26 @@ h1, h2, h3, h4 {
 @media (max-width: 767px) {
   /* Flow offset = `.site-main-nav-spacer` (same as desktop); do not pad-top main or it doubles */
   #site-main {
-    padding-left: 1rem !important;
-    padding-right: 1rem !important;
-    padding-bottom: 1rem !important;
+    padding-left: max(1rem, env(safe-area-inset-left, 0px)) !important;
+    padding-right: max(1rem, env(safe-area-inset-right, 0px)) !important;
+    padding-bottom: max(1rem, env(safe-area-inset-bottom, 0px)) !important;
     padding-top: 0 !important;
     min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  .portfolio-filters {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    scroll-padding-inline: max(0.25rem, env(safe-area-inset-left, 0px))
+      max(0.25rem, env(safe-area-inset-right, 0px));
+  }
+  .portfolio-filters::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
   }
   /* Overlay when menu open */
   #mobile-overlay {
