@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabaseClient';
 
@@ -45,6 +46,11 @@ function AdminLogin() {
   };
 
   return (
+    <>
+      <Helmet>
+        <title>Admin sign in | Fatima Choudhry</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
     <div className="bg-[#0f172a] font-['Inter'] text-slate-100 min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="rounded-2xl border border-slate-700 bg-slate-800/50 p-8 shadow-xl">
@@ -95,6 +101,7 @@ function AdminLogin() {
         <p className="text-center text-slate-500 text-sm mt-6"><Link to="/" className="text-primary hover:underline">← Back to site</Link></p>
       </div>
     </div>
+    </>
   );
 }
 

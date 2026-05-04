@@ -2,6 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { primeProfileFetch } from './lib/profileLoad.js'
 import { primePortfolioGridFetch } from './lib/portfolioCache.js'
+import { HelmetProvider } from 'react-helmet-async'
 import App from './App.jsx'
 
 /** Warm TLS + DNS to Supabase before first REST call */
@@ -25,6 +26,8 @@ primePortfolioGridFetch()
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <App />
+    <HelmetProvider>
+      <App />
+    </HelmetProvider>
   </React.StrictMode>,
 )

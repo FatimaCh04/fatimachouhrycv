@@ -10,6 +10,7 @@ import Blog from './components/Blog';
 import Contact from './components/Contact';
 import Resume from './components/Resume';
 import Footer from './components/Footer';
+import Seo from './components/Seo';
 import { ProfileProvider } from './lib/PublicProfileContext.jsx';
 
 // Admin Components
@@ -53,6 +54,7 @@ function FrontLayout() {
 
   return (
     <ProfileProvider>
+      <Seo />
       <div id="mobile-overlay" aria-hidden="true" onClick={() => setMobileMenuOpen(false)}></div>
       <div className="min-h-screen">
         <Navbar

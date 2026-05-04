@@ -1,6 +1,8 @@
 import React from 'react';
+import { Helmet } from 'react-helmet-async';
 import { Link, useParams } from 'react-router-dom';
 import { useSupabaseQuery } from '../lib/useSupabaseQuery';
+import { getSiteUrl, SITE_NAME, truncateMetaDescription, DEFAULT_DESCRIPTION } from '../lib/seoConfig';
 
 const CATEGORIES = [
   { slug: 'react-development', label: 'React Development' },
@@ -64,9 +66,31 @@ function ProjectDetail() {
   const techList = parseTechnologies(project.technologies);
   const hasLiveView = project.live_link && project.live_link.trim().length > 0;
   const isMobileApp = (project.category || '').toLowerCase().replace(/\s+/g, '-') === 'mobile-app-development';
+  const siteUrl = getSiteUrl();
+  const pageDesc = truncateMetaDescription(project.description, 160) || DEFAULT_DESCRIPTION;
+  const pageUrl = siteUrl ? `${siteUrl}/project/${id}` : '';
+  const rawImg = (project.image || '').trim();
+  const ogImage =
+    rawImg && (rawImg.startsWith('http://') || rawImg.startsWith('https://'))
+      ? rawImg
+      : rawImg && siteUrl
+        ? `${siteUrl}${rawImg.startsWith('/') ? rawImg : `/${rawImg}`}`
+        : '';
 
   return (
     <div className="max-w-5xl mx-auto space-y-6 text-left">
+      <Helmet>
+        <title>{`${project.title} | ${SITE_NAME}`}</title>
+        <meta name="description" content={pageDesc} />
+        {pageUrl ? <link rel="canonical" href={pageUrl} /> : null}
+        <meta property="og:title" content={`${project.title} | ${SITE_NAME}`} />
+        <meta property="og:description" content={pageDesc} />
+        {pageUrl ? <meta property="og:url" content={pageUrl} /> : null}
+        {ogImage ? <meta property="og:image" content={ogImage} /> : null}
+        <meta name="twitter:title" content={`${project.title} | ${SITE_NAME}`} />
+        <meta name="twitter:description" content={pageDesc} />
+        {ogImage ? <meta name="twitter:image" content={ogImage} /> : null}
+      </Helmet>
       <Link
         to="/portfolio"
         className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-slate-900 font-semibold hover:bg-teal-400 transition-colors"

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { NavLink, Outlet, Navigate, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabaseClient';
 import { adminCache } from '../adminCache';
@@ -70,6 +71,11 @@ function AdminLayout() {
   }
 
   return (
+    <>
+      <Helmet>
+        <title>Admin | Fatima Choudhry</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
     <div className="flex bg-[#0f172a] font-['Inter'] text-slate-100 antialiased min-h-screen w-full">
       <div className="admin-overlay md:hidden" aria-hidden="true" onClick={() => setAdminMenuOpen(false)} />
       <button type="button" className="admin-menu-btn hidden" aria-label="Open admin menu" onClick={() => setAdminMenuOpen((v) => !v)}>
@@ -112,6 +118,7 @@ function AdminLayout() {
         <Outlet />
       </main>
     </div>
+    </>
   );
 }
 
