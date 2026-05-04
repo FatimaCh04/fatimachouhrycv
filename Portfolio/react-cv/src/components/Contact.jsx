@@ -4,7 +4,7 @@ import { useSupabaseQuery } from '../lib/useSupabaseQuery';
 const DEFAULT_LINKS = [
   { id: '1', label: 'Email', url: 'mailto:fatimachoudhry94@gmail.com', icon: 'mail' },
   { id: '2', label: 'GitHub', url: 'https://github.com/FatimaCh04/FA23-BSE-123-5B-Fatima-Ch-', icon: 'github' },
-  { id: '3', label: 'LinkedIn', url: 'https://www.linkedin.com/in/fatima-choudhry-714423358/', icon: 'linkedin' },
+  { id: '3', label: 'LinkedIn', url: 'https://www.linkedin.com/in/fatima-choudhry/', icon: 'linkedin' },
 ];
 
 const GitHubIcon = () => (
@@ -27,6 +27,9 @@ function ContactLinkIcon({ link }) {
   if (isLinkedIn) return <LinkedInIcon />;
   return <span className="material-symbols-outlined text-xl">{link.icon || 'link'}</span>;
 }
+
+const LOCAL_CONTACT_HINT =
+  "This message box uses Gmail behind the scenes. With npm run dev the contact API isn't running — deploy on Vercel with GMAIL_USER + GMAIL_APP_PASSWORD (see CONTACT_EMAIL_SETUP.md), or run npm run dev:vercel locally with those vars in .env.development.local. Or email fatimachoudhry94@gmail.com directly.";
 
 function Contact() {
   const [formStatus, setFormStatus] = useState({ type: '', message: '' });
@@ -57,11 +60,7 @@ function Contact() {
     })
       .then((r) => {
         if (!r.ok && r.status === 404) {
-          return {
-            ok: false,
-            error:
-              "Contact form works on the live site. You're likely testing locally — deploy to Vercel and set Gmail env vars (see CONTACT_EMAIL_SETUP.md), or email fatimachoudhry94@gmail.com",
-          };
+          return { ok: false, _localHint: true, error: LOCAL_CONTACT_HINT };
         }
         return r.json();
       })
@@ -73,19 +72,20 @@ function Contact() {
           });
           form.reset();
         } else {
+          const isHint = data._localHint;
           setFormStatus({
-            type: 'error',
-            message: data.error || 'Something went wrong. Please try again or email fatimachoudhry94@gmail.com',
+            type: isHint ? 'info' : 'error',
+            message:
+              data.error ||
+              'Something went wrong. Please try again or email fatimachoudhry94@gmail.com',
           });
         }
       })
       .catch(() => {
         const isLocal = typeof window !== 'undefined' && /localhost|127\.0\.0\.1/.test(window.location.origin);
         setFormStatus({
-          type: 'error',
-          message: isLocal
-            ? 'Contact form runs only on the deployed site. Deploy to Vercel, add Gmail env vars (CONTACT_EMAIL_SETUP.md), or email fatimachoudhry94@gmail.com'
-            : 'Network error. Please try again or email fatimachoudhry94@gmail.com',
+          type: isLocal ? 'info' : 'error',
+          message: isLocal ? LOCAL_CONTACT_HINT : 'Network error. Please try again or email fatimachoudhry94@gmail.com',
         });
       });
   };
@@ -128,11 +128,14 @@ function Contact() {
             </p>
             {formStatus.message && (
               <div
-                className={`mt-5 rounded-xl border p-4 text-sm font-medium ${
+                className={`mt-5 rounded-xl border p-4 text-sm font-medium leading-relaxed ${
                   formStatus.type === 'success'
                     ? 'border-emerald-500/50 bg-emerald-500/15 text-emerald-100'
-                    : 'border-red-500/50 bg-red-500/15 text-red-100'
+                    : formStatus.type === 'info'
+                      ? 'border-amber-500/35 bg-amber-500/10 text-amber-50'
+                      : 'border-red-500/50 bg-red-500/15 text-red-100'
                 }`}
+                role={formStatus.type === 'success' ? 'status' : 'alert'}
               >
                 {formStatus.message}
               </div>

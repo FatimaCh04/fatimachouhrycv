@@ -152,13 +152,13 @@ const SUPABASE_POSTS_SELECT = 'id, title, content, image, created_at';
 
 function BlogSkeleton() {
   return (
-    <div className="space-y-8 pt-2 md:space-y-10">
+    <div className="col-span-full grid grid-cols-1 gap-6 sm:gap-7 md:grid-cols-2 md:gap-8">
       {[1, 2, 3, 4].map((i) => (
         <article
           key={i}
-          className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/40 animate-pulse"
+          className="min-w-0 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/40 animate-pulse"
         >
-          <div className="h-56 bg-slate-800/80 sm:h-64 md:h-72" />
+          <div className="aspect-video bg-slate-800/80" />
           <div className="space-y-3 p-6 md:p-8">
             <div className="flex gap-2">
               <div className="h-4 w-24 rounded bg-slate-800" />
@@ -264,7 +264,7 @@ function Blog() {
     filter === 'all' ? articles : articles.filter((a) => (a.type || '').toLowerCase() === filter.toLowerCase());
 
   return (
-    <div className="blog-page mx-auto max-w-6xl space-y-12 px-4 pb-14 md:space-y-14 md:pb-20 sm:px-0">
+    <div className="blog-page mx-auto w-full min-w-0 max-w-6xl space-y-12 px-4 pb-14 md:space-y-14 md:pb-20 sm:px-0">
       <header className="border-b border-slate-800/80 pb-10 md:pb-12">
         <div className="mx-auto w-full max-w-3xl text-center">
           <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">Journal</p>
@@ -309,20 +309,20 @@ function Blog() {
         <h2 id="blog-feed-heading" className="sr-only">
           Article feed
         </h2>
-        <div className="space-y-8 pt-2 md:space-y-10" id="news-feed">
+        <div className="grid grid-cols-1 gap-6 pt-2 sm:gap-7 md:grid-cols-2 md:gap-8" id="news-feed">
           {loading && <BlogSkeleton />}
           {error && (
-            <p className="rounded-2xl border border-amber-500/30 bg-amber-500/10 px-6 py-8 text-center text-amber-200/90" id="news-loading">
+            <p className="col-span-full rounded-2xl border border-amber-500/30 bg-amber-500/10 px-6 py-8 text-center text-amber-200/90" id="news-loading">
               Could not load articles. Refresh the page or try again later.
             </p>
           )}
           {!loading && !error && articles.length === 0 && (
-            <p className="rounded-2xl border border-slate-800 bg-slate-900/40 px-6 py-12 text-center text-slate-400">
+            <p className="col-span-full rounded-2xl border border-slate-800 bg-slate-900/40 px-6 py-12 text-center text-slate-400">
               No articles right now. Try again later.
             </p>
           )}
           {!loading && !error && articles.length > 0 && filteredArticles.length === 0 && (
-            <p className="rounded-2xl border border-slate-800 bg-slate-900/40 px-6 py-12 text-center text-slate-400">
+            <p className="col-span-full rounded-2xl border border-slate-800 bg-slate-900/40 px-6 py-12 text-center text-slate-400">
               Nothing in this category — try &quot;All&quot; or another filter.
             </p>
           )}
@@ -344,26 +344,26 @@ function Blog() {
               return (
                 <article
                   key={a.id || idx}
-                  className="group relative overflow-hidden rounded-2xl border border-slate-700/90 bg-slate-900/35 text-left shadow-sm transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-0.5 hover:border-primary/35 hover:shadow-[0_16px_36px_-20px_rgba(15,23,42,0.85)]"
+                  className="blog-card group relative min-w-0 overflow-hidden rounded-2xl border border-slate-700/90 bg-slate-900/35 text-left shadow-sm transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-0.5 hover:border-primary/35 hover:shadow-[0_16px_36px_-20px_rgba(15,23,42,0.85)]"
                 >
                   <span className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-[3px] bg-gradient-to-r from-primary via-primary/80 to-accent opacity-95" />
-                  <div className="relative h-56 w-full shrink-0 overflow-hidden bg-slate-950 sm:h-64 md:h-72">
+                  <div className="blog-card-thumb relative aspect-video w-full shrink-0 overflow-hidden bg-slate-950">
                     <img
                       src={imgUrl}
                       alt=""
-                      className="block size-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                      className="blog-card-image block size-full object-cover"
                       loading="lazy"
                       decoding="async"
-                      fetchPriority={idx < 2 ? 'high' : 'low'}
+                      fetchPriority={idx < 4 ? 'high' : 'low'}
                       onError={(e) => {
                         if (e.target.src !== placeholderImg) {
                           e.target.src = placeholderImg;
                         }
                       }}
                     />
-                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/50 to-transparent" />
+                    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-slate-950/45 to-transparent" />
                   </div>
-                  <div className="relative p-6 md:p-8">
+                  <div className="relative p-5 md:p-6">
                     <div className="mb-3 flex flex-wrap items-center gap-2 text-sm text-slate-400">
                       <span className="material-symbols-outlined text-base text-slate-500">calendar_today</span>
                       <time>{formatDate(a.created_at)}</time>

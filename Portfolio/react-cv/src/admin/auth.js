@@ -48,12 +48,13 @@ export const AdminData = {
 
   saveProfileToSupabase: async (data) => {
     if (!data) return;
+    const photoRaw = data.photo != null ? String(data.photo).trim() : '';
     const row = {
       id: 1,
       name: (data.name || '').trim(),
       title: (data.title || '').trim(),
       tagline: (data.tagline || '').trim(),
-      photo: data.photo || null,
+      photo: photoRaw || null,
     };
     await supabase.from('profile').upsert(row, { onConflict: 'id' });
   },

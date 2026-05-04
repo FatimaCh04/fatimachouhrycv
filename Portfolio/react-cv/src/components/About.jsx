@@ -92,11 +92,6 @@ function About() {
                 'I care about pragmatic architecture, repeatable automation, and shipping work that stakeholders can trace from idea to deployed behaviour.'}{' '}
               When you collaborate with me you get clarity, documentation where it counts, and a bias toward sustainable delivery.
             </p>
-            <p className="text-[15px] leading-relaxed text-slate-400 sm:text-base">
-              I’m comfortable working across the stack, from designing JSON contracts and error handling to polishing UI states
-              and performance. I test critical paths, keep dependencies honest, and leave enough context in the repo that the
-              next person isn’t starting from zero.
-            </p>
             <p className="text-[15px] leading-relaxed text-slate-500 sm:text-base">
               Day to day I’m learning in public through projects, coursework, and real client-style constraints: deadlines, scope
               changes, and the need to ship something useful without cutting corners on security or data integrity.

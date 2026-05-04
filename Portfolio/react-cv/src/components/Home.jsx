@@ -81,8 +81,8 @@ function Home() {
     <div className="home-page mx-auto w-full min-w-0 max-w-6xl space-y-8 pb-8 sm:space-y-10">
       {/* Hero: 50 / 50 grid — full-width balance, photo anchored in right column */}
       <section className="home-page-hero mt-0 w-full min-w-0 pt-1 pb-8 md:pt-3 md:pb-12 lg:pt-4 lg:pb-14">
-        <div className="grid w-full min-w-0 grid-cols-1 items-center gap-8 md:gap-10 lg:grid-cols-2 lg:gap-6 xl:gap-8">
-          <div className="home-hero-stagger min-w-0 max-w-full text-center md:pl-3 lg:max-w-xl lg:pl-8 lg:text-left xl:max-w-2xl xl:pl-10">
+        <div className="grid w-full min-w-0 grid-cols-1 items-center gap-8 md:gap-8 lg:grid-cols-2 lg:gap-x-8 lg:gap-y-12 xl:gap-x-10">
+          <div className="home-hero-stagger w-full min-w-0 max-w-full justify-self-center text-center lg:max-w-xl lg:justify-self-end lg:pl-6 lg:text-left xl:max-w-2xl xl:pl-10">
             <div className="font-hero leading-[0.95] tracking-tight">
               <span className="block break-words text-[clamp(1.625rem,7vw,2.25rem)] font-bold uppercase text-slate-100 sm:text-5xl md:text-6xl lg:text-[3.25rem] xl:text-7xl">
                 {firstName}
@@ -138,26 +138,31 @@ function Home() {
             </div>
           </div>
 
-          <div className="flex min-w-0 justify-center md:-translate-x-0.5 lg:-translate-x-2 lg:justify-end xl:-translate-x-4">
-            <figure className="home-hero-photo relative aspect-[3/4] w-full max-w-[min(280px,100%)] overflow-hidden rounded-3xl border border-primary/30 bg-gradient-to-br from-slate-800/80 to-slate-900 shadow-[0_0_40px_-8px_rgba(79,70,229,0.35)] sm:max-w-[min(340px,100%)] md:max-w-[min(380px,42vw)] lg:max-w-[min(380px,100%)]">
-              {profile.photo ? (
-                <img
-                  alt={profile.name}
-                  key={profile.photo}
-                  className="profile-photo size-full object-cover object-center"
-                  fetchPriority="high"
-                  decoding="async"
-                  src={profile.photo}
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = '/assets/images/profile-placeholder.svg';
-                  }}
+          <div className="flex min-w-0 w-full justify-center lg:justify-self-stretch lg:justify-end lg:-translate-x-1.5 lg:pr-4 xl:-translate-x-2 xl:pr-6">
+            <div className="home-hero-photo-wrap shrink-0">
+              <figure className="home-hero-photo relative size-[clamp(15rem,46vw,20.25rem)] overflow-hidden rounded-full border-2 border-primary/35 bg-gradient-to-br from-slate-800/90 to-slate-900 shadow-[0_12px_40px_-12px_rgba(79,70,229,0.45)] ring-4 ring-primary/15 sm:size-[clamp(16.25rem,40vw,20.75rem)] md:size-[clamp(17.25rem,32vw,21.25rem)] lg:size-[clamp(17.75rem,26vw,22rem)]">
+                {profile.photo ? (
+                  <img
+                    alt={profile.name}
+                    key={profile.photo}
+                    className="profile-photo size-full object-cover object-center"
+                    fetchPriority="high"
+                    decoding="async"
+                    src={profile.photo}
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = '/assets/images/profile-placeholder.svg';
+                    }}
+                  />
+                ) : (
+                  <div className="absolute inset-0 animate-pulse rounded-full bg-slate-800/70" aria-hidden />
+                )}
+                <div
+                  className="pointer-events-none absolute inset-0 rounded-full bg-[radial-gradient(circle_at_50%_30%,transparent_45%,rgba(15,23,42,0.25)_100%)]"
+                  aria-hidden
                 />
-              ) : (
-                <div className="absolute inset-0 animate-pulse bg-slate-800/70" aria-hidden />
-              )}
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/40 to-transparent" aria-hidden />
-            </figure>
+              </figure>
+            </div>
           </div>
         </div>
       </section>

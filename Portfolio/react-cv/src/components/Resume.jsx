@@ -11,6 +11,8 @@ import {
 } from '../lib/portfolioCache';
 
 const PDF_FILENAME = 'Fatima_Choudhry_Resume.pdf';
+/** PDF raster + print-friendly sheet colour */
+const PDF_SURFACE_BG = '#ffffff';
 
 function downloadPdfBlob(blob, filename) {
   const url = URL.createObjectURL(blob);
@@ -54,7 +56,7 @@ function canvasToPagedPdfBlob(canvas, marginMm = 8) {
     pageCanvas.height = slicePx;
     const ctx = pageCanvas.getContext('2d');
     if (!ctx) throw new Error('Canvas unsupported');
-    ctx.fillStyle = '#0f172a';
+    ctx.fillStyle = PDF_SURFACE_BG;
     ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
     ctx.drawImage(canvas, 0, srcY, cw, srcH, 0, 0, cw, srcH);
 
@@ -138,7 +140,7 @@ async function captureResumeWithHtmlToImage(el, pixelRatio) {
   return toCanvas(el, {
     width: RESUME_CARD_CSS_PX,
     height,
-    backgroundColor: '#0f172a',
+    backgroundColor: PDF_SURFACE_BG,
     pixelRatio,
     cacheBust: true,
     style: {
@@ -164,7 +166,7 @@ async function captureResumeToCanvasHtml2(el, scale, foreignObjectRendering) {
     useCORS: true,
     allowTaint: false,
     logging: Boolean(import.meta.env?.DEV),
-    backgroundColor: '#0f172a',
+    backgroundColor: PDF_SURFACE_BG,
     foreignObjectRendering,
     removeContainer: true,
     imageTimeout: 20000,
@@ -299,10 +301,10 @@ function ResumeSection({ title, children, id }) {
   return (
     <section className="resume-section mb-10 md:mb-12" id={id}>
       <div className="mb-5 flex min-w-0 items-center gap-3">
-        <h2 className="resume-section-title font-hero shrink-0 text-lg font-bold tracking-tight text-accent md:text-xl">
+        <h2 className="resume-section-title font-hero shrink-0 text-lg font-bold tracking-tight text-primary md:text-xl">
           {title}
         </h2>
-        <div className="resume-section-rule h-px min-h-[1px] min-w-[2rem] flex-1 rounded-full bg-gradient-to-r from-accent/90 via-accent/45 to-transparent" />
+        <div className="resume-section-rule h-px min-h-[1px] min-w-[2rem] flex-1 rounded-full bg-gradient-to-r from-primary/90 via-primary/45 to-transparent" />
       </div>
       {children}
     </section>
@@ -342,10 +344,10 @@ function Resume() {
       {
         icon: 'work',
         label: 'LinkedIn',
-        value: 'linkedin.com/in/fatima-choudhry-714423358',
-        href: 'https://www.linkedin.com/in/fatima-choudhry-714423358/',
+        value: 'linkedin.com/in/fatima-choudhry',
+        href: 'https://www.linkedin.com/in/fatima-choudhry/',
       },
-      { icon: 'translate', label: 'Languages', value: 'English, Urdu, Punjabi' },
+      { icon: 'interpreter_mode', label: 'Languages', value: 'English, Urdu, Punjabi' },
     ],
     []
   );
@@ -390,6 +392,7 @@ function Resume() {
       if (document.fonts?.ready) {
         await document.fonts.ready.catch(() => {});
       }
+      el.classList.add('resume-pdf-export');
       await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
 
       const pixelRatio = computePdfPixelRatio(el);
@@ -460,6 +463,7 @@ function Resume() {
           : 'PDF download failed. Use your browser’s Print → Save as PDF instead.'
       );
     } finally {
+      el.classList.remove('resume-pdf-export');
       restorePdfImages();
       unlockPdfLayout();
       setDownloading(false);
@@ -486,19 +490,95 @@ function Resume() {
           font-size: 0.8125rem;
           letter-spacing: 0.02em;
         }
+
+        /* ── White “paper” résumé for PDF capture (class toggled in JS) ── */
+        #resume-content.resume-pdf-export {
+          background: ${PDF_SURFACE_BG} !important;
+          background-image: none !important;
+          border-color: #cbd5e1 !important;
+          box-shadow: none !important;
+          color: #0f172a !important;
+        }
+        #resume-content.resume-pdf-export header.border-b,
+        #resume-content.resume-pdf-export header { border-color: rgba(79, 70, 229, 0.28) !important; }
+        #resume-content.resume-pdf-export footer { border-color: #e2e8f0 !important; }
+        #resume-content.resume-pdf-export .text-white { color: #0f172a !important; }
+        #resume-content.resume-pdf-export .text-slate-300 { color: #334155 !important; }
+        #resume-content.resume-pdf-export .text-slate-400 { color: #475569 !important; }
+        #resume-content.resume-pdf-export .text-slate-500,
+        #resume-content.resume-pdf-export .text-slate-600 { color: #64748b !important; }
+        #resume-content.resume-pdf-export .text-accent,
+        #resume-content.resume-pdf-export [class*="text-accent"],
+        #resume-content.resume-pdf-export .text-primary,
+        #resume-content.resume-pdf-export [class*="text-primary"] { color: #4338ca !important; }
+        #resume-content.resume-pdf-export a[class*="text-slate"] { color: #2563eb !important; }
+        #resume-content.resume-pdf-export .material-symbols-outlined { color: #4338ca !important; }
+        #resume-content.resume-pdf-export [class*="bg-slate-900"],
+        #resume-content.resume-pdf-export [class*="bg-slate-950"] { background-color: #f1f5f9 !important; }
+        #resume-content.resume-pdf-export [class*="bg-slate-800"] { background-color: #e2e8f0 !important; }
+        #resume-content.resume-pdf-export .resume-photo-frame {
+          background: #f1f5f9 !important;
+          border-color: rgba(79, 70, 229, 0.45) !important;
+          box-shadow: 0 1px 4px rgba(15, 23, 42, 0.08) !important;
+          padding: 0 !important;
+          overflow: hidden !important;
+        }
+        #resume-content.resume-pdf-export .resume-photo-img {
+          border-radius: 0 !important;
+          width: 100% !important;
+          height: 100% !important;
+          min-height: 100% !important;
+          object-fit: cover !important;
+          object-position: center !important;
+          display: block !important;
+        }
+        #resume-content.resume-pdf-export .resume-skill-chip,
+        #resume-content.resume-pdf-export span.resume-skill-chip {
+          white-space: nowrap !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          line-height: 1.25 !important;
+          max-width: none !important;
+        }
+        #resume-content.resume-pdf-export #resume-skills .resume-skill-grid-row,
+        #resume-content.resume-pdf-export #resume-skills .resume-skill-group {
+          break-inside: avoid !important;
+          page-break-inside: avoid !important;
+        }
+        #resume-content.resume-pdf-export [class*="border-primary"] { border-color: rgba(79, 70, 229, 0.35) !important; }
+        #resume-content.resume-pdf-export .resume-project-card {
+          background: #f8fafc !important;
+          border-color: rgba(79, 70, 229, 0.28) !important;
+        }
+        #resume-content.resume-pdf-export .resume-project-card .absolute.bottom-0.left-0.right-0 {
+          background: rgba(241, 245, 249, 0.96) !important;
+        }
+        #resume-content.resume-pdf-export .resume-project-card .absolute.bottom-0 [class*="text-primary"] { color: #4338ca !important; }
+        #resume-content.resume-pdf-export span[class*="rounded-full"][class*="border-primary"] {
+          background-color: #eef2ff !important;
+          border-color: rgba(79, 70, 229, 0.4) !important;
+          color: #3730a3 !important;
+        }
+        #resume-content.resume-pdf-export [class*="bg-gradient-to-r"] {
+          background-image: linear-gradient(to right, #4f46e5, rgba(79, 70, 229, 0.45), transparent) !important;
+        }
+        #resume-content.resume-pdf-export .resume-project-img { background: #e2e8f0 !important; }
+        #resume-content.resume-pdf-export ul[list] li::marker,
+        #resume-content.resume-pdf-export ul li::marker { color: #4f46e5 !important; }
+
         @media print {
           @page { size: A4; margin: 12mm; }
           body, body * {
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
           }
-          body { zoom: 1 !important; background: #0f172a !important; }
+          body { zoom: 1 !important; background: ${PDF_SURFACE_BG} !important; color: #0f172a !important; }
           .no-print { display: none !important; }
           main {
             margin-left: 0 !important;
             max-width: 100% !important;
             padding: 0 !important;
-            background: #0f172a !important;
+            background: ${PDF_SURFACE_BG} !important;
           }
           #site-navbar { display: none !important; }
           #site-navbar-dropdown { display: none !important; }
@@ -511,10 +591,58 @@ function Resume() {
           }
           #resume-content {
             box-shadow: none !important;
-            border: 1px solid rgba(79, 70, 229, 0.35) !important;
+            border: 1px solid #cbd5e1 !important;
             border-radius: 0.75rem !important;
-            background: rgba(15, 23, 42, 0.98) !important;
+            background: ${PDF_SURFACE_BG} !important;
+            background-image: none !important;
             overflow: visible !important;
+            color: #0f172a !important;
+          }
+          #resume-content header { border-color: rgba(79, 70, 229, 0.28) !important; }
+          #resume-content footer { border-color: #e2e8f0 !important; }
+          #resume-content .text-white { color: #0f172a !important; }
+          #resume-content .text-slate-300 { color: #334155 !important; }
+          #resume-content .text-slate-400 { color: #475569 !important; }
+          #resume-content .text-slate-500,
+          #resume-content .text-slate-600 { color: #64748b !important; }
+          #resume-content .text-accent,
+          #resume-content [class*="text-accent"],
+          #resume-content .text-primary,
+          #resume-content [class*="text-primary"] { color: #4338ca !important; }
+          #resume-content a[class*="text-slate"] { color: #2563eb !important; }
+          #resume-content .material-symbols-outlined { color: #4338ca !important; }
+          #resume-content [class*="bg-slate-900"],
+          #resume-content [class*="bg-slate-950"] { background-color: #f1f5f9 !important; }
+          #resume-content [class*="bg-slate-800"] { background-color: #e2e8f0 !important; }
+          #resume-content .resume-photo-frame {
+            width: fit-content !important;
+            height: auto !important;
+            min-width: 8rem !important;
+            min-height: 9.75rem !important;
+            border-radius: 0.75rem !important;
+            overflow: hidden !important;
+            border: 2px solid ${PRIMARY_HEX} !important;
+            padding: 0 !important;
+            flex-shrink: 0 !important;
+            box-shadow: 0 1px 4px rgba(15, 23, 42, 0.1) !important;
+            background: #f1f5f9 !important;
+          }
+          #resume-content [class*="border-primary"] { border-color: rgba(79, 70, 229, 0.35) !important; }
+          #resume-content .resume-project-card {
+            background: #f8fafc !important;
+            border-color: rgba(79, 70, 229, 0.28) !important;
+          }
+          #resume-content .resume-project-card .absolute.bottom-0.left-0.right-0 {
+            background: rgba(241, 245, 249, 0.96) !important;
+          }
+          #resume-content .resume-project-card .absolute.bottom-0 [class*="text-primary"] { color: #4338ca !important; }
+          #resume-content span[class*="rounded-full"][class*="border-primary"] {
+            background-color: #eef2ff !important;
+            border-color: rgba(79, 70, 229, 0.4) !important;
+            color: #3730a3 !important;
+          }
+          #resume-content [class*="bg-gradient-to-r"] {
+            background-image: linear-gradient(to right, #4f46e5, rgba(79, 70, 229, 0.45), transparent) !important;
           }
           #resume-content img {
             max-width: 100%;
@@ -526,30 +654,34 @@ function Resume() {
           }
           #resume-content .resume-photo-img {
             width: 8rem !important;
-            height: 10rem !important;
+            height: 9.75rem !important;
             min-width: 8rem !important;
-            min-height: 10rem !important;
+            min-height: 9.75rem !important;
             object-fit: cover !important;
-            border-radius: 0.75rem !important;
+            object-position: center !important;
+            border-radius: 0 !important;
+            display: block !important;
           }
-          #resume-content .resume-photo-frame {
-            width: fit-content !important;
-            height: auto !important;
-            min-width: 8rem !important;
-            min-height: 10rem !important;
-            border-radius: 0.75rem !important;
-            overflow: hidden !important;
-            border: 2px solid ${PRIMARY_HEX} !important;
-            padding: 3px !important;
-            flex-shrink: 0 !important;
-            box-shadow: 0 0 20px rgba(79, 70, 229, 0.28) !important;
+          #resume-content .resume-skill-chip {
+            white-space: nowrap !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            line-height: 1.25 !important;
+            max-width: none !important;
+          }
+          #resume-content #resume-skills .resume-skill-grid-row,
+          #resume-content #resume-skills .resume-skill-group {
+            break-inside: avoid !important;
+            page-break-inside: avoid !important;
           }
           #resume-content .resume-project-img {
             width: 100% !important;
             height: 140px !important;
             min-height: 140px !important;
             object-fit: cover !important;
+            background: #e2e8f0 !important;
           }
+          #resume-content ul li::marker { color: #4f46e5 !important; }
           #resume-content [class*="border"],
           #resume-content [class*="text-"],
           #resume-content [class*="bg-"] {
@@ -593,12 +725,12 @@ function Resume() {
         >
           <header className="border-b border-primary/20 px-6 py-8 md:px-10 md:py-10">
             <div className="flex flex-col gap-8 sm:flex-row sm:items-start">
-              <div className="resume-photo-frame mx-auto shrink-0 rounded-xl border-2 border-primary/60 bg-slate-900/80 p-1 shadow-glow sm:mx-0">
+              <div className="resume-photo-frame mx-auto h-36 w-28 shrink-0 overflow-hidden rounded-xl border-2 border-primary/60 bg-slate-900 shadow-glow sm:mx-0 sm:h-[9.75rem] sm:w-32 md:h-44 md:w-36">
                 {profile.photo ? (
                   <img
                     alt=""
                     key={profile.photo}
-                    className="resume-photo-img h-40 w-32 rounded-[10px] object-cover object-center md:h-48 md:w-36"
+                    className="resume-photo-img block h-full w-full object-cover object-center"
                     loading="eager"
                     decoding="async"
                     src={profile.photo}
@@ -608,26 +740,23 @@ function Resume() {
                     }}
                   />
                 ) : (
-                  <div
-                    className="h-40 w-32 animate-pulse rounded-[10px] bg-slate-800/80 md:h-48 md:w-36"
-                    aria-hidden
-                  />
+                  <div className="h-full w-full animate-pulse bg-slate-800/90" aria-hidden />
                 )}
               </div>
 
               <div className="min-w-0 flex-1 text-center sm:text-left">
                 <h1 className="resume-name-display text-3xl font-bold leading-tight tracking-tight text-white md:text-[2.125rem]">
                   <span>{nameParts.first}</span>
-                  {nameParts.rest ? <span className="text-accent"> {nameParts.rest}</span> : null}
+                  {nameParts.rest ? <span className="text-primary"> {nameParts.rest}</span> : null}
                 </h1>
-                <p className="resume-title mt-2 font-display text-[11px] font-semibold uppercase tracking-[0.28em] text-accent/85 md:text-xs">
+                <p className="resume-title mt-2 font-display text-[11px] font-semibold uppercase tracking-[0.28em] text-primary/85 md:text-xs">
                   {(profile.title || 'Software Engineer').toUpperCase()}
                 </p>
 
                 <div className="mx-auto mt-6 grid max-w-3xl grid-cols-1 gap-x-8 gap-y-3 text-left sm:mx-0 sm:grid-cols-2 lg:grid-cols-3">
                   {contactItems.map((c) => (
                     <div key={c.label} className="flex min-w-0 items-start gap-2.5">
-                      <span className="material-symbols-outlined mt-0.5 shrink-0 text-lg text-accent">
+                      <span className="material-symbols-outlined mt-0.5 shrink-0 text-lg text-primary">
                         {c.icon}
                       </span>
                       <div className="min-w-0 text-sm leading-snug">
@@ -637,7 +766,7 @@ function Resume() {
                             href={c.href}
                             target={c.href.startsWith('mailto:') || c.href.startsWith('tel:') ? undefined : '_blank'}
                             rel={c.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                            className="break-all text-slate-400 transition-colors hover:text-accent"
+                            className="break-all text-slate-400 transition-colors hover:text-primary"
                           >
                             {c.value}
                           </a>
@@ -652,7 +781,7 @@ function Resume() {
             </div>
 
             <div
-              className="mt-8 h-px w-full rounded-full bg-gradient-to-r from-accent via-accent/55 to-transparent"
+              className="mt-8 h-px w-full rounded-full bg-gradient-to-r from-primary via-primary/55 to-transparent"
               aria-hidden
             />
           </header>
@@ -669,7 +798,7 @@ function Resume() {
             <ResumeSection title="Education" id="resume-education">
               <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
                 <h3 className="resume-name-display text-lg font-bold text-white md:text-xl">{EDUCATION.degree}</h3>
-                <span className="resume-date-mono shrink-0 text-accent">{EDUCATION.period}</span>
+                <span className="resume-date-mono shrink-0 text-primary">{EDUCATION.period}</span>
               </div>
               <p className="mt-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{EDUCATION.school}</p>
               <p className="mt-3 max-w-3xl text-sm leading-relaxed text-slate-500 md:text-[15px]">{EDUCATION.detail}</p>
@@ -680,7 +809,7 @@ function Resume() {
                 <h3 className="resume-name-display max-w-xl text-lg font-bold leading-snug text-white md:text-xl">
                   {EXPERIENCE.title}
                 </h3>
-                <span className="resume-date-mono shrink-0 text-accent">{EXPERIENCE.period}</span>
+                <span className="resume-date-mono shrink-0 text-primary">{EXPERIENCE.period}</span>
               </div>
               <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-primary/90">{EXPERIENCE.context}</p>
               <ul className="marker:text-primary mt-4 max-w-3xl list-disc space-y-2.5 pl-5 text-sm leading-relaxed text-slate-400 md:text-[15px]">
@@ -697,18 +826,18 @@ function Resume() {
                 {SKILL_ROWS.map((pair, rowIdx) => (
                   <div
                     key={`skill-row-${rowIdx}`}
-                    className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-x-8 sm:gap-y-4"
+                    className="resume-skill-grid-row grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-x-8 sm:gap-y-4"
                   >
                     {pair.map((g) => (
-                      <div key={g.label} className="min-w-0">
+                      <div key={g.label} className="resume-skill-group min-w-0">
                         <p className="mb-2.5 text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500">
                           {g.label}
                         </p>
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex flex-wrap content-start gap-2 leading-none">
                           {g.items.map((s) => (
                             <span
                               key={`${g.label}-${s}`}
-                              className="rounded-full border border-primary/25 bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary"
+                              className="resume-skill-chip inline-flex max-w-none items-center whitespace-nowrap rounded-full border border-primary/25 bg-primary/10 px-2.5 py-1.5 text-xs font-medium leading-tight text-primary"
                             >
                               {s}
                             </span>

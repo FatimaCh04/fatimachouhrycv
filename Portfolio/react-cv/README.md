@@ -11,6 +11,8 @@ cp .env.example .env
 npm run dev
 ```
 
+The Contact form needs the **`/api/send-contact`** serverless route — it **does not work** under `npm run dev` alone. For Gmail setup see **CONTACT_EMAIL_SETUP.md**; to test sending mail locally use **`npm run dev:vercel`** with `GMAIL_*` in `.env.development.local`.
+
 ## Deploy (Vercel)
 
 1. Push to GitHub → Import project in Vercel.

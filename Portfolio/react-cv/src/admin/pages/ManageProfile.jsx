@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { AdminData } from '../auth';
+import { compressProfileImage } from '../../lib/compressProfileImage.js';
+import { PROFILE_CACHE_KEY, primeProfileFetch } from '../../lib/profileLoad';
+import { notifyStorageCacheUpdated } from '../../lib/storageCacheEvents.js';
 
 function ManageProfile() {
   const [formData, setFormData] = useState({
@@ -8,6 +11,7 @@ function ManageProfile() {
   const [imageDataUrl, setImageDataUrl] = useState('');
   const fileInputRef = useRef(null);
   const [saved, setSaved] = useState(false);
+  const [photoOptimizing, setPhotoOptimizing] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -26,12 +30,24 @@ function ManageProfile() {
     return () => { cancelled = true; };
   }, []);
 
-  const handleImageChange = (e) => {
+  const handleImageChange = async (e) => {
     const file = e.target.files && e.target.files[0];
+    const input = e.target;
     if (!file || !file.type.match(/^image\//)) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => setImageDataUrl(ev.target.result || '');
-    reader.readAsDataURL(file);
+    setPhotoOptimizing(true);
+    try {
+      const compressed = await compressProfileImage(file);
+      if (compressed) {
+        setImageDataUrl(compressed);
+      } else {
+        const reader = new FileReader();
+        reader.onload = (ev) => setImageDataUrl(ev.target.result || '');
+        reader.readAsDataURL(file);
+      }
+    } finally {
+      setPhotoOptimizing(false);
+      input.value = '';
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -45,6 +61,14 @@ function ManageProfile() {
     try {
       await AdminData.saveProfileToSupabase(payload);
       AdminData.saveProfile(payload);
+      try {
+        localStorage.removeItem(PROFILE_CACHE_KEY);
+        notifyStorageCacheUpdated(PROFILE_CACHE_KEY);
+        await primeProfileFetch();
+        notifyStorageCacheUpdated(PROFILE_CACHE_KEY);
+      } catch (_) {
+        /** ignore cache refresh failures */
+      }
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } catch (err) {
@@ -75,8 +99,29 @@ function ManageProfile() {
             </div>
             <div>
               <input type="file" ref={fileInputRef} onChange={handleImageChange} accept="image/*" className="sr-only"/>
-              <button type="button" onClick={() => fileInputRef.current.click()} className="px-4 py-2 rounded-lg bg-slate-700 text-slate-300 text-sm font-medium hover:bg-slate-600 transition">Change Photo</button>
-              <p className="text-xs text-slate-500 mt-2">Recommended: 1:1 aspect ratio, under 1MB.</p>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={photoOptimizing}
+                  className="rounded-lg bg-slate-700 px-4 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-600 disabled:opacity-50"
+                >
+                  {photoOptimizing ? 'Optimizing…' : 'Change Photo'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setImageDataUrl('')}
+                  disabled={photoOptimizing || !imageDataUrl}
+                  className="rounded-lg border border-slate-600 px-4 py-2 text-sm font-medium text-slate-400 transition hover:border-red-400/60 hover:text-red-300 disabled:opacity-40"
+                >
+                  Remove Photo
+                </button>
+              </div>
+              <p className="mt-2 text-xs text-slate-500">
+                Each save stores a ~720px JPEG so the site loads faster. To wipe an old huge value from the database, run{' '}
+                <code className="rounded bg-slate-900 px-1 py-0.5 text-[11px] text-slate-300">supabase/clear-profile-photo.sql</code>{' '}
+                in the Supabase SQL editor once, then save a new photo here.
+              </p>
             </div>
           </div>
         </div>

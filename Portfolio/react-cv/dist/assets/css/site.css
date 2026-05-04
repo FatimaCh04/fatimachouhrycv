@@ -168,11 +168,22 @@ section.rounded-xl:hover {
 @keyframes homeHeroPhotoIn {
   from {
     opacity: 0;
-    transform: translateY(20px) scale(0.98);
+    transform: translateY(12px) scale(0.88);
   }
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+/** Gentle bob after load — paired with `.home-hero-photo-wrap`; inner photo keeps entrance only */
+@keyframes homeHeroPhotoFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
   }
 }
 
@@ -208,9 +219,31 @@ section.rounded-xl:hover {
   animation-delay: 0.29s;
 }
 
+.home-hero-photo-wrap {
+  position: relative;
+  isolation: isolate;
+  overflow: visible;
+  animation: homeHeroPhotoFloat 4.75s ease-in-out infinite both;
+  animation-delay: 0.85s;
+}
+
+.home-hero-photo-wrap::after {
+  content: "";
+  position: absolute;
+  inset: -10px;
+  border-radius: 9999px;
+  border: 1px solid rgba(53, 200, 255, 0.32);
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.75;
+  animation: ringPulse 2.85s ease-out infinite;
+}
+
 .home-hero-photo {
+  position: relative;
+  z-index: 1;
   opacity: 0;
-  animation: homeHeroPhotoIn 0.74s cubic-bezier(0.22, 1, 0.36, 1) 0.12s forwards;
+  animation: homeHeroPhotoIn 0.78s cubic-bezier(0.22, 1, 0.36, 1) 0.12s forwards;
 }
 
 .home-contact-head-stagger > * {
@@ -290,6 +323,7 @@ section.rounded-xl:hover {
 @media (prefers-reduced-motion: reduce) {
   .home-hero-stagger > *,
   .home-hero-photo,
+  .home-hero-photo-wrap,
   .home-contact-head-stagger > *,
   .home-info-stagger .home-info-item,
   .home-stats-stagger > .home-stat-pill,
@@ -297,6 +331,12 @@ section.rounded-xl:hover {
   .home-collab-banner {
     animation: none !important;
     opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .home-hero-photo-wrap::after {
+    animation: none !important;
+    opacity: 0.4;
     transform: none !important;
   }
 
@@ -697,6 +737,19 @@ a.text-primary,
 .services-page > header,
 .contact-page > header {
   position: relative;
+}
+
+/* Blog cards: crisp cover images (backdrop/stacking + hover-scale was reading as “blur”) */
+.blog-page .blog-card-thumb {
+  isolation: isolate;
+  transform: translateZ(0);
+}
+
+.blog-page .blog-card-image {
+  filter: none !important;
+  image-rendering: auto;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 /* In-page anchors / deep links: headings clear the fixed bar */

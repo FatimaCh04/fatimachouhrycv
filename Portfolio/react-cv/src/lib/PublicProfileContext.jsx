@@ -1,5 +1,10 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { PROFILE_CACHE_KEY, primeProfileFetch, readCachedProfileRow } from './profileLoad';
+import {
+  PROFILE_CACHE_KEY,
+  primeProfileFetch,
+  profilePhotoSrc,
+  readCachedProfileEnvelope,
+} from './profileLoad';
 import { STORAGE_CACHE_UPDATE_EVENT } from './storageCacheEvents.js';
 
 const DEFAULT_PROFILE = {
@@ -16,8 +21,10 @@ const PublicProfileContext = createContext(null);
  * so the network request starts before React mounts on cold loads.
  */
 export function ProfileProvider({ children }) {
-  const [data, setData] = useState(() => readCachedProfileRow());
-  const [loading, setLoading] = useState(() => readCachedProfileRow() == null);
+  const init = typeof window !== 'undefined' ? readCachedProfileEnvelope() : { data: null, at: null };
+  const [data, setData] = useState(() => init.data);
+  const [cacheAt, setCacheAt] = useState(() => init.at);
+  const [loading, setLoading] = useState(() => init.data == null);
 
   useEffect(() => {
     let cancelled = false;
@@ -25,6 +32,8 @@ export function ProfileProvider({ children }) {
       if (cancelled) return;
       if (!error && row && typeof row === 'object') {
         setData(row);
+        const { at } = readCachedProfileEnvelope();
+        setCacheAt(at);
       }
       setLoading(false);
     });
@@ -35,9 +44,10 @@ export function ProfileProvider({ children }) {
 
   useEffect(() => {
     const sync = () => {
-      const row = readCachedProfileRow();
+      const { data: row, at } = readCachedProfileEnvelope();
       if (row) {
         setData(row);
+        setCacheAt(at);
         setLoading(false);
       }
     };
@@ -56,11 +66,13 @@ export function ProfileProvider({ children }) {
 
   const profile = useMemo(() => {
     if (data && typeof data === 'object') {
+      const trimmed = typeof data.photo === 'string' ? data.photo.trim() : '';
+      const rawPhoto = trimmed || null;
       return {
         name: data.name || DEFAULT_PROFILE.name,
         title: data.title || DEFAULT_PROFILE.title,
         tagline: data.tagline || DEFAULT_PROFILE.tagline,
-        photo: data.photo && data.photo.trim() ? data.photo.trim() : DEFAULT_PROFILE.photo,
+        photo: rawPhoto ? profilePhotoSrc(rawPhoto, cacheAt) : null,
       };
     }
     if (loading) {
@@ -69,8 +81,11 @@ export function ProfileProvider({ children }) {
         photo: null,
       };
     }
-    return DEFAULT_PROFILE;
-  }, [data, loading]);
+    return {
+      ...DEFAULT_PROFILE,
+      photo: profilePhotoSrc(DEFAULT_PROFILE.photo, cacheAt),
+    };
+  }, [data, loading, cacheAt]);
 
   const value = useMemo(() => ({ profile, loading }), [profile, loading]);
 
