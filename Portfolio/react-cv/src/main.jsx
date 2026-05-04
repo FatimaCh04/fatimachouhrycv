@@ -4,6 +4,7 @@ import { primeProfileFetch } from './lib/profileLoad.js'
 import { primePortfolioGridFetch } from './lib/portfolioCache.js'
 import { HelmetProvider } from 'react-helmet-async'
 import App from './App.jsx'
+import { RootErrorBoundary } from './components/RootErrorBoundary.jsx'
 
 /** Warm TLS + DNS to Supabase before first REST call */
 try {
@@ -24,10 +25,18 @@ try {
 primeProfileFetch()
 primePortfolioGridFetch()
 
-ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <HelmetProvider>
-      <App />
-    </HelmetProvider>
-  </React.StrictMode>,
-)
+const rootEl = document.getElementById('root')
+if (!rootEl) {
+  document.body.innerHTML =
+    '<p style="padding:2rem;font-family:sans-serif;">Missing #root — check index.html.</p>'
+} else {
+  ReactDOM.createRoot(rootEl).render(
+    <React.StrictMode>
+      <RootErrorBoundary>
+        <HelmetProvider>
+          <App />
+        </HelmetProvider>
+      </RootErrorBoundary>
+    </React.StrictMode>,
+  )
+}
