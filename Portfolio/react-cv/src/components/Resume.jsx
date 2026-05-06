@@ -30,8 +30,44 @@ function downloadPdfBlob(blob, filename) {
 const PDF_IMG_FALLBACK_DATA =
   'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
 
+function collectPdfLinkRects(rootEl) {
+  const rootRect = rootEl.getBoundingClientRect();
+  const anchors = Array.from(rootEl.querySelectorAll('a[href]'));
+  return anchors
+    .map((a) => {
+      const hrefRaw = (a.getAttribute('href') || '').trim();
+      if (!hrefRaw) return null;
+      let href = hrefRaw;
+      if (!/^mailto:|^tel:|^https?:\/\//i.test(hrefRaw)) {
+        try {
+          href = new URL(hrefRaw, window.location.href).href;
+        } catch {
+          return null;
+        }
+      }
+      const r = a.getBoundingClientRect();
+      const x = r.left - rootRect.left;
+      const y = r.top - rootRect.top;
+      const w = r.width;
+      const h = r.height;
+      if (!(w > 2 && h > 2)) return null;
+      return { href, x, y, w, h };
+    })
+    .filter(Boolean);
+}
+
+function collectPreferredPageBreaksPx(rootEl) {
+  const rootRect = rootEl.getBoundingClientRect();
+  const targets = rootEl.querySelectorAll('.resume-section, #resume-skills .resume-skill-group, .resume-project-card');
+  const tops = Array.from(targets)
+    .map((el) => Math.round(el.getBoundingClientRect().top - rootRect.top))
+    .filter((v) => Number.isFinite(v) && v > 0 && v < rootEl.scrollHeight - 4);
+  return Array.from(new Set(tops)).sort((a, b) => a - b);
+}
+
 /** Split a tall canvas across A4 pages (mm) and return a PDF Blob */
-function canvasToPagedPdfBlob(canvas, marginMm = 8) {
+function canvasToPagedPdfBlob(canvas, options = {}) {
+  const { marginMm = 8, linkRects = [], preferredBreaksPx = [] } = options;
   const cw = canvas.width;
   const ch = canvas.height;
   if (!cw || !ch) throw new Error('Empty canvas');
@@ -43,12 +79,24 @@ function canvasToPagedPdfBlob(canvas, marginMm = 8) {
   const usableHeight = pdfHeight - marginMm * 2;
 
   const totalHeightMm = (ch * usableWidth) / cw;
-  let yMm = 0;
+  const mmPerPx = totalHeightMm / ch;
+  const maxPagePx = usableHeight / mmPerPx;
+  const breakpoints = Array.isArray(preferredBreaksPx) ? preferredBreaksPx : [];
 
-  while (yMm < totalHeightMm - 0.01) {
-    const pageSliceMm = Math.min(usableHeight, totalHeightMm - yMm);
-    const srcY = (yMm / totalHeightMm) * ch;
-    const srcH = (pageSliceMm / totalHeightMm) * ch;
+  let yPx = 0;
+  while (yPx < ch - 0.5) {
+    const targetEndPx = Math.min(ch, yPx + maxPagePx);
+    let srcEndPx = targetEndPx;
+    if (targetEndPx < ch - 0.5 && breakpoints.length) {
+      const minSlicePx = Math.max(200, maxPagePx * 0.58);
+      const chosen = breakpoints
+        .filter((b) => b > yPx + minSlicePx && b <= targetEndPx - 8)
+        .pop();
+      if (chosen) srcEndPx = chosen;
+    }
+    const srcY = yPx;
+    const srcH = Math.max(1, srcEndPx - yPx);
+    const pageSliceMm = srcH * mmPerPx;
 
     const slicePx = Math.max(1, Math.ceil(srcH));
     const pageCanvas = document.createElement('canvas');
@@ -63,8 +111,28 @@ function canvasToPagedPdfBlob(canvas, marginMm = 8) {
     const dataUrl = pageCanvas.toDataURL('image/jpeg', 0.92);
     pdf.addImage(dataUrl, 'JPEG', marginMm, marginMm, usableWidth, pageSliceMm, undefined, 'MEDIUM');
 
-    yMm += pageSliceMm;
-    if (yMm < totalHeightMm - 0.01) pdf.addPage();
+    if (linkRects.length) {
+      const pageTop = yPx;
+      const pageBottom = yPx + srcH;
+      linkRects.forEach((l) => {
+        const ix = Math.max(0, l.x);
+        const iw = Math.min(cw - ix, l.w);
+        const iTop = Math.max(l.y, pageTop);
+        const iBottom = Math.min(l.y + l.h, pageBottom);
+        const ih = iBottom - iTop;
+        if (iw <= 1 || ih <= 1) return;
+        const pdfX = marginMm + (ix / cw) * usableWidth;
+        const pdfY = marginMm + ((iTop - pageTop) / srcH) * pageSliceMm;
+        const pdfW = (iw / cw) * usableWidth;
+        const pdfH = (ih / srcH) * pageSliceMm;
+        if (pdfW > 0.5 && pdfH > 0.5) {
+          pdf.link(pdfX, pdfY, pdfW, pdfH, { url: l.href });
+        }
+      });
+    }
+
+    yPx += srcH;
+    if (yPx < ch - 0.5) pdf.addPage();
   }
 
   return pdf.output('blob');
@@ -360,6 +428,8 @@ function Resume() {
 
     let restorePdfImages = () => {};
     let unlockPdfLayout = () => {};
+    let pdfLinkRects = [];
+    let preferredBreaksPx = [];
 
     try {
       window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
@@ -387,6 +457,8 @@ function Resume() {
 
       unlockPdfLayout = lockResumeLayoutForPdf(el);
       await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+      pdfLinkRects = collectPdfLinkRects(el);
+      preferredBreaksPx = collectPreferredPageBreaksPx(el);
 
       restorePdfImages = await prepareImagesForPdfCapture(el);
       if (document.fonts?.ready) {
@@ -441,7 +513,11 @@ function Resume() {
 
       let blob;
       try {
-        blob = canvasToPagedPdfBlob(canvas);
+        blob = canvasToPagedPdfBlob(canvas, {
+          marginMm: 8,
+          linkRects: pdfLinkRects,
+          preferredBreaksPx,
+        });
       } catch (e) {
         if (e?.name === 'SecurityError' || String(e?.message || '').includes('Tainted')) {
           throw new Error('Blocked exporting canvas (cross-origin content).');
