@@ -2,29 +2,27 @@ import { supabase } from './supabaseClient';
 import { notifyStorageCacheUpdated } from './storageCacheEvents.js';
 
 /** Must match what PublicProfileContext / legacy hooks expect in localStorage */
-export const PROFILE_CACHE_KEY = 'supabase_profile';
+export const PROFILE_CACHE_KEY = 'supabase_profile_v2';
 
 let inflight = null;
 
 async function fetchProfileRowFromSupabase() {
-  // Preferred canonical row for this app.
+  // First choice: most recently updated profile row.
   let q = await supabase
     .from('profile')
-    .select('id, name, title, tagline, photo')
-    .eq('id', 1)
+    .select('name, title, tagline, photo')
+    .order('updated_at', { ascending: false })
+    .limit(1)
     .maybeSingle();
-  if (!q.error) {
-    const data = q.data
-      ? { name: q.data.name, title: q.data.title, tagline: q.data.tagline, photo: q.data.photo }
-      : null;
-    return { data, error: null };
+  if (!q.error && q.data) {
+    return { data: q.data, error: null };
   }
 
-  // Backward-compatible fallback for schemas without id constraint.
+  // Fallback for schemas without updated_at.
   q = await supabase
     .from('profile')
     .select('name, title, tagline, photo')
-    .order('id', { ascending: true })
+    .order('id', { ascending: false })
     .limit(1)
     .maybeSingle();
   return { data: q.data || null, error: q.error || null };
