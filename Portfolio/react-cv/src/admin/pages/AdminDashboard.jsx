@@ -74,7 +74,7 @@ function AdminDashboard() {
 
   const handleExport = async () => {
     const profile = AdminData.getProfile() || {};
-    const profileJson = JSON.stringify({ name: profile.name || '', title: profile.title || '', tagline: profile.tagline || '', photo: profile.photo || '/assets/images/profile.jpg', resumeUrl: profile.resumeUrl || '' }, null, 2);
+    const profileJson = JSON.stringify({ name: profile.name || '', title: profile.title || '', tagline: profile.tagline || '', photo: profile.photo || '/assets/images/profile-placeholder.svg', resumeUrl: profile.resumeUrl || '' }, null, 2);
     let projects = [];
     let services = [];
     let posts = [];

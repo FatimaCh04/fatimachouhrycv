@@ -11,7 +11,7 @@ const DEFAULT_PROFILE = {
   name: 'Fatima Choudhry',
   title: 'Software Engineer | Full Stack and Cross-Platform Developer',
   tagline: 'Building scalable automation and custom software solutions.',
-  photo: '/assets/images/profile.jpg',
+  photo: '/assets/images/profile-placeholder.svg',
 };
 
 const PublicProfileContext = createContext(null);
