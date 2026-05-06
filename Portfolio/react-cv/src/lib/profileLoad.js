@@ -6,6 +6,30 @@ export const PROFILE_CACHE_KEY = 'supabase_profile';
 
 let inflight = null;
 
+async function fetchProfileRowFromSupabase() {
+  // Preferred canonical row for this app.
+  let q = await supabase
+    .from('profile')
+    .select('id, name, title, tagline, photo')
+    .eq('id', 1)
+    .maybeSingle();
+  if (!q.error) {
+    const data = q.data
+      ? { name: q.data.name, title: q.data.title, tagline: q.data.tagline, photo: q.data.photo }
+      : null;
+    return { data, error: null };
+  }
+
+  // Backward-compatible fallback for schemas without id constraint.
+  q = await supabase
+    .from('profile')
+    .select('name, title, tagline, photo')
+    .order('id', { ascending: true })
+    .limit(1)
+    .maybeSingle();
+  return { data: q.data || null, error: q.error || null };
+}
+
 /** Full cache envelope (row + `at` ms for image cache-busting after upload / CDN) */
 export function readCachedProfileEnvelope() {
   if (typeof window === 'undefined') return { data: null, at: null };
@@ -52,11 +76,7 @@ export function primeProfileFetch() {
   }
   if (inflight) return inflight;
 
-  inflight = supabase
-    .from('profile')
-    .select('name, title, tagline, photo')
-    .limit(1)
-    .maybeSingle()
+  inflight = fetchProfileRowFromSupabase()
     .then(({ data, error }) => {
       if (!error && data) {
         try {

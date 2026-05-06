@@ -42,8 +42,23 @@ export const AdminData = {
   },
 
   getProfileFromSupabase: async () => {
-    const { data } = await supabase.from('profile').select('name, title, tagline, photo').limit(1).maybeSingle();
-    return data || null;
+    let q = await supabase
+      .from('profile')
+      .select('id, name, title, tagline, photo')
+      .eq('id', 1)
+      .maybeSingle();
+    if (!q.error) {
+      const d = q.data;
+      return d ? { name: d.name, title: d.title, tagline: d.tagline, photo: d.photo } : null;
+    }
+
+    q = await supabase
+      .from('profile')
+      .select('name, title, tagline, photo')
+      .order('id', { ascending: true })
+      .limit(1)
+      .maybeSingle();
+    return q.data || null;
   },
 
   saveProfileToSupabase: async (data) => {
