@@ -11,6 +11,7 @@ function ManageProfile() {
   const [imageDataUrl, setImageDataUrl] = useState('');
   const fileInputRef = useRef(null);
   const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState('');
   const [photoOptimizing, setPhotoOptimizing] = useState(false);
 
   useEffect(() => {
@@ -52,6 +53,8 @@ function ManageProfile() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSaveError('');
+    setSaved(false);
     const payload = {
       name: formData.name.trim(),
       title: formData.title.trim(),
@@ -74,6 +77,8 @@ function ManageProfile() {
     } catch (err) {
       console.error(err);
       setSaved(false);
+      const msg = err?.message ? String(err.message) : '';
+      setSaveError(msg || 'Failed to save profile to Supabase. Check table RLS policy and try again.');
     }
   };
 
@@ -145,6 +150,11 @@ function ManageProfile() {
           <button type="submit" className="px-6 py-2.5 rounded-xl bg-primary text-slate-900 font-semibold hover:bg-teal-400 transition">Save Changes</button>
           {saved && <span className="text-emerald-400 font-medium">Saved successfully!</span>}
         </div>
+        {saveError ? (
+          <p className="text-sm text-red-300" role="alert">
+            {saveError}
+          </p>
+        ) : null}
       </form>
     </div>
   );

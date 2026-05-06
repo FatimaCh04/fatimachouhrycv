@@ -71,7 +71,8 @@ export const AdminData = {
       tagline: (data.tagline || '').trim(),
       photo: photoRaw || null,
     };
-    await supabase.from('profile').upsert(row, { onConflict: 'id' });
+    const { error } = await supabase.from('profile').upsert(row, { onConflict: 'id' });
+    if (error) throw error;
   },
 
   getBlogPosts: async () => {
