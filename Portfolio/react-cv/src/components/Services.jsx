@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useSupabaseQuery } from '../lib/useSupabaseQuery';
+import { resolveServiceIcon } from '../lib/serviceIcons';
 
 const DEFAULT_SERVICES = [
   {
@@ -65,7 +66,6 @@ function ServicesSkeleton() {
           <div className="mt-4 h-5 w-2/3 rounded bg-slate-700/50" />
           <div className="mt-3 h-3 w-full rounded bg-slate-800" />
           <div className="mt-2 h-3 w-5/6 rounded bg-slate-800" />
-          <div className="mt-5 h-6 w-24 rounded-full bg-slate-800" />
         </div>
       ))}
     </div>
@@ -74,7 +74,7 @@ function ServicesSkeleton() {
 
 function Services() {
   const { data: fetchedServices = [], loading } = useSupabaseQuery('services', {
-    select: 'id, title, description, price, icon',
+    select: 'id, title, description, icon',
     orderBy: 'id',
     orderAsc: true,
     limit: 30,
@@ -89,7 +89,7 @@ function Services() {
         <div className="mx-auto w-full max-w-5xl text-center md:text-left">
           <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">Offerings</p>
           <h1 className="font-hero mt-3 text-[clamp(2rem,4.5vw,3rem)] font-bold leading-[1.08] tracking-tight text-white">
-            Services and <span className="text-accent">rates</span>
+            <span className="text-accent">Services</span>
           </h1>
           <div
             className="featured-heading-rule mx-auto mt-5 flex max-w-md items-center justify-center gap-4 md:mx-0 md:justify-start"
@@ -99,8 +99,8 @@ function Services() {
             <span className="featured-heading-rule-dot" />
           </div>
           <p className="mx-auto mt-6 max-w-2xl text-[15px] leading-relaxed text-slate-400 sm:text-base md:mx-0">
-            End-to-end delivery across web, APIs, and automation — scoped estimates after we align on goals. Rates below are a
-            baseline; fixed-scope projects can be quoted separately.
+            End-to-end delivery across web, APIs, and automation — scoped estimates after we align on goals. For pricing and
+            timelines, reach out via Contact and we can shape a plan that fits.
           </p>
         </div>
       </header>
@@ -122,7 +122,7 @@ function Services() {
                 <div className="relative z-[2] flex flex-1 flex-col text-left">
                   <div className="mb-4 flex items-start justify-between gap-3">
                     <div className="inline-flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/12 text-primary transition-colors group-hover:bg-primary/18">
-                      <span className="material-symbols-outlined text-[26px]">{s.icon || 'code'}</span>
+                      <span className="material-symbols-outlined text-[26px]">{resolveServiceIcon(s.icon, s.title)}</span>
                     </div>
                     <span className="rounded-full border border-slate-600/70 bg-slate-800/60 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-500">
                       {String(idx + 1).padStart(2, '0')}
@@ -130,11 +130,6 @@ function Services() {
                   </div>
                   <h3 className="text-lg font-bold leading-snug text-white md:text-xl">{s.title}</h3>
                   <p className="mt-3 flex-1 text-sm leading-relaxed text-slate-400">{s.description}</p>
-                  {s.price && (
-                    <p className="mt-5 inline-flex w-fit items-center rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-sm font-bold text-accent">
-                      {s.price}
-                    </p>
-                  )}
                 </div>
               </article>
             ))}

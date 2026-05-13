@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabaseClient';
 import { adminCache } from '../adminCache';
+import { resolveServiceIcon } from '../../lib/serviceIcons';
 
 function ManageServices() {
   const [services, setServices] = useState(() => adminCache.getServices() || []);
@@ -51,7 +52,7 @@ function ManageServices() {
       title: formData.title.trim(),
       description: formData.description.trim(),
       price: formData.price.trim(),
-      icon: formData.icon.trim() || 'code'
+      icon: resolveServiceIcon(formData.icon, formData.title),
     };
 
     if (editingItem) {
@@ -77,7 +78,10 @@ function ManageServices() {
       <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-2xl font-bold text-white">Services</h1>
-          <p className="text-slate-400 text-sm mt-1">Manage what you offer in Supabase.</p>
+          <p className="text-slate-400 text-sm mt-1">
+            Manage what you offer in Supabase. Optional rates here stay in admin only — the public Services page does not show
+            prices.
+          </p>
         </div>
         <button type="button" onClick={() => openModal()} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-slate-900 font-semibold hover:bg-teal-400 transition">
           <span className="material-symbols-outlined">add</span> Add Service
@@ -92,7 +96,7 @@ function ManageServices() {
             <div key={s.id} className="rounded-xl border border-slate-700 bg-slate-800/40 p-5 flex flex-wrap items-center justify-between gap-4">
               <div className="flex gap-4 min-w-0 flex-1">
                 <div className="size-12 rounded-lg bg-primary/20 flex items-center justify-center text-primary flex-shrink-0">
-                  <span className="material-symbols-outlined text-2xl">{s.icon || 'code'}</span>
+                  <span className="material-symbols-outlined text-2xl">{resolveServiceIcon(s.icon, s.title)}</span>
                 </div>
                 <div className="min-w-0">
                   <h3 className="font-semibold text-white">{s.title || 'Untitled'}</h3>
@@ -127,8 +131,8 @@ function ManageServices() {
                   <textarea rows="3" value={formData.description} onChange={e=>setFormData({...formData, description: e.target.value})} className="w-full px-4 py-2 rounded-xl bg-slate-800 border border-slate-600 text-white focus:border-primary outline-none resize-none"></textarea>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">Price / Rate</label>
-                  <input value={formData.price} onChange={e=>setFormData({...formData, price: e.target.value})} className="w-full px-4 py-2 rounded-xl bg-slate-800 border border-slate-600 text-white focus:border-primary outline-none" placeholder="$35/hour"/>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">Rate (optional)</label>
+                  <input value={formData.price} onChange={e=>setFormData({...formData, price: e.target.value})} className="w-full px-4 py-2 rounded-xl bg-slate-800 border border-slate-600 text-white focus:border-primary outline-none" placeholder="$35/hour — not shown on site"/>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-slate-300 mb-1">Material Icon Name</label>
